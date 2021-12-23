@@ -1,0 +1,290 @@
+/*
+********************************************************************
+* rabbitcontrol - a protocol and data-format for remote control.
+*
+* https://rabbitcontrol.cc
+* https://github.com/rabbitcontrol/rcp-c
+*
+* This file is part of rabbitcontrol for c.
+*
+* Written by Ingo Randolf, 2021
+*
+* This Source Code Form is subject to the terms of the Mozilla Public
+* License, v. 2.0. If a copy of the MPL was not distributed with this
+* file, You can obtain one at https://mozilla.org/MPL/2.0/.
+*********************************************************************
+*/
+
+#include "rcp_langstr.h"
+
+#include <string.h>
+
+#include "rcp_memory.h"
+#include "rcp_string.h"
+#include "rcp_logging.h"
+
+struct rcp_language_str
+{
+    rcp_language_str* next;
+
+    // zero-terminated c-string
+    char* str;
+
+    // size when serialized! (not length of string!)
+    size_t length;
+
+    // string type: string-tiny, string-short, string-long
+    rcp_string_types type;
+
+    // the 3-character language code
+    char code[RCP_LANGUAGE_CODE_SIZE];
+};
+
+
+
+rcp_language_str* rcp_langstr_create(const char* code)
+{
+    if (code == NULL) return NULL;
+
+    rcp_language_str* lng_str = RCP_CALLOC(1, sizeof(rcp_language_str));
+
+    if (lng_str)
+    {
+        RCP_DEBUG("*** langstr: %p\n", lng_str);
+
+        strncpy(lng_str->code, code, RCP_LANGUAGE_CODE_SIZE);
+    }
+
+    return lng_str;
+}
+
+
+rcp_language_str* rcp_langstr_copy(rcp_language_str* ls)
+{
+    // recreate language string chain
+    rcp_language_str* dst_lng_str = NULL;
+    rcp_language_str* src_lng_str = ls;
+
+    while (src_lng_str)
+    {
+        // create a new lng-string
+        rcp_language_str* new_lng_str = rcp_langstr_create(rcp_langstr_get_code(src_lng_str));
+        if (new_lng_str == NULL)
+        {
+            RCP_DEBUG("could not create language string\n");
+            rcp_langstr_free_chain(dst_lng_str);
+            return NULL;
+        }
+
+        rcp_langstr_copy_string(new_lng_str, src_lng_str->str, src_lng_str->type);
+        new_lng_str->next = dst_lng_str;
+        dst_lng_str = new_lng_str;
+
+        // next
+        src_lng_str = src_lng_str->next;
+    }
+
+    return dst_lng_str;
+}
+
+
+
+void rcp_langstr_free_chain(rcp_language_str* ls)
+{
+    RCP_DEBUG("||| free_langstr_chain: %p\n", ls)
+    rcp_language_str* next;
+
+    while (ls)
+    {
+        next = ls->next;
+
+        if (ls->str != NULL)
+        {
+            RCP_DEBUG("+++ langstr str: %p\n", ls->str);
+            RCP_FREE(ls->str);
+        }
+
+        RCP_DEBUG("+++ langstr: %p\n", ls);
+        RCP_FREE(ls);
+
+        ls = next;
+    }
+}
+
+
+void rcp_langstr_log_chain(rcp_language_str* ls)
+{
+    while (ls)
+    {
+        RCP_INFO_ONLY("str [%s]: %s\n", ls->code, ls->str);
+        ls = ls->next;
+    }
+}
+
+
+void rcp_langstr_set_next(rcp_language_str* ls, rcp_language_str* next)
+{
+    if (ls == NULL) return;
+    ls->next = next;
+}
+
+rcp_language_str* rcp_langstr_get_next(rcp_language_str* ls)
+{
+    if (ls == NULL) return NULL;
+    return ls->next;
+}
+
+
+size_t rcp_langstr_get_size(rcp_language_str* ls)
+{
+    if (ls == NULL) return 0;
+    return ls->length;
+}
+
+size_t rcp_langstr_get_chain_size(rcp_language_str* ls)
+{
+    size_t size = 1; // terminator at end
+    while (ls)
+    {
+        size += ls->length;
+        ls = ls->next;
+    }
+
+    return size;
+}
+
+
+bool rcp_langstr_is_code(rcp_language_str* ls, const char* code)
+{
+    if (ls == NULL) return false;
+
+    return strcmp(ls->code, code) == 0;
+}
+
+const char* rcp_langstr_get_code(rcp_language_str* ls)
+{
+    if (ls == NULL) return NULL;
+
+    return ls->code;
+}
+
+
+
+static void _langstr_free_str(rcp_language_str* ls)
+{
+    if (ls != NULL &&
+            ls->str != NULL)
+    {
+        RCP_DEBUG("+++ string: %p\n", ls->str);
+        RCP_FREE((void*)ls->str);
+
+        ls->str = NULL;
+        ls->length = 0;
+    }
+}
+
+
+
+// full transfer
+void rcp_langstr_set_string(rcp_language_str* ls, const char* str, size_t str_len, rcp_string_types type)
+{
+    if (ls == NULL) return;
+
+    _langstr_free_str(ls);
+
+    ls->str = (char*)str;
+    ls->length = str_len + type + RCP_LANGUAGE_CODE_SIZE;
+    ls->type = type;
+}
+
+void rcp_langstr_copy_string(rcp_language_str* ls, const char* str, rcp_string_types type)
+{
+    if (ls == NULL) return;
+
+    _langstr_free_str(ls);
+
+    // malloc
+    size_t buf_len = strlen(str) + 1;
+    if (buf_len > 1)
+    {
+        ls->str = (char*)RCP_MALLOC(buf_len);
+
+        if (ls->str != NULL)
+        {
+            RCP_DEBUG("*** string data: %p\n", ls->str);
+
+            strlcpy(ls->str, str, buf_len);
+
+            ls->length = buf_len - 1 + type + RCP_LANGUAGE_CODE_SIZE;
+            ls->type = type;
+
+//            RCP_DEBUG("string data: %s\n", ls->str);
+//            RCP_DEBUG("lng string length: %d\n", ls->length);
+        }
+        else
+        {
+            RCP_ERROR("could not malloc for str data\n");
+        }
+    }
+}
+
+const char* rcp_langstr_get_string(rcp_language_str* ls)
+{
+    if (ls == NULL) return NULL;
+    return ls->str;
+}
+
+// write whole language-string chain
+size_t rcp_langstr_write(rcp_language_str* lng_str, char* data, size_t size)
+{
+    size_t written = 0;
+    size_t written_len = 0;
+
+    while (lng_str)
+    {
+        // TODO: check size first
+
+        // write language code
+        memcpy(data, rcp_langstr_get_code(lng_str), RCP_LANGUAGE_CODE_SIZE);
+        written += RCP_LANGUAGE_CODE_SIZE;
+
+        if (written >= size)
+        {
+            RCP_DEBUG("offset >= data_size! 1\n");
+            return 0;
+        }
+
+        data += RCP_LANGUAGE_CODE_SIZE;
+
+        switch (lng_str->type)
+        {
+        case TINY_STRING:
+            written_len = rcp_write_tiny_string(data, lng_str->str);
+            break;
+        case SHORT_STRING:
+            written_len = rcp_write_short_string(data, lng_str->str);
+            break;
+        case LONG_STRING:
+            written_len = rcp_write_long_string(data, lng_str->str);
+            break;
+        }
+
+        written += written_len;
+
+        if (written >= size)
+        {
+            RCP_DEBUG("offset >= data_size! 2\n");
+            return 0;
+        }
+
+        data += written_len;
+
+        lng_str = rcp_langstr_get_next(lng_str);
+    }
+
+    // write terminator
+    memset(data, 0, 1);
+    written += 1;
+
+    return written;
+}
