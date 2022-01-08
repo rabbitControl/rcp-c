@@ -18,11 +18,12 @@
 #ifndef RCP_TYPEDEFINITION_H
 #define RCP_TYPEDEFINITION_H
 
-#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+#include <stdlib.h>
 
 #include "rcp.h"
 #include "rcp_typedefinition_type.h"

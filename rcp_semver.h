@@ -18,11 +18,11 @@
 #ifndef RCP_SEMVER_H
 #define RCP_SEMVER_H
 
-#include <stdbool.h>
-
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+#include <stdbool.h>
 
 typedef struct rcp_semver
 {

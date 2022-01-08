@@ -18,11 +18,11 @@
 #ifndef RCP_PARSER_H
 #define RCP_PARSER_H
 
-#include <stdlib.h>
-
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+#include <stdlib.h>
 
 #include "rcp.h"
 #include "rcp_parameter_type.h"

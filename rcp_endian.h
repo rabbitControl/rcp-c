@@ -18,13 +18,12 @@
 #ifndef RCP_ENDIAN_H
 #define RCP_ENDIAN_H
 
-#include <stdlib.h>
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C"{
 #endif
 
+#include <stdlib.h>
+#include <stdint.h>
 
 #ifndef ntohs
 uint16_t ntohs(uint16_t x);

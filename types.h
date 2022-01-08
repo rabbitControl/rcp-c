@@ -18,6 +18,10 @@
 #ifndef RCP_TYPES_H
 #define RCP_TYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 #define RCP_TERMINATOR 0
@@ -254,5 +258,9 @@ enum rcp_string_types_t {
     SHORT_STRING = 2,
     LONG_STRING = 4
 };
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
