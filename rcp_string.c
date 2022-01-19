@@ -19,7 +19,7 @@
 
 #include <string.h>
 
-#include "types.h"
+#include "rcp_types.h"
 #include "rcp_memory.h"
 #include "rcp_parser.h"
 #include "rcp_logging.h"

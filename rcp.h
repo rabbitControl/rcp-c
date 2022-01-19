@@ -31,7 +31,7 @@ extern "C"{
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "types.h"
+#include "rcp_types.h"
 
 #define RCP_VERSION "0.1.0"
 #define RCP_VERSION_MAJOR 0
