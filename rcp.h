@@ -43,7 +43,7 @@ extern "C"{
 #define RCP_CHECKFLAG(x, f) (x & (1 << f))
 
 
-// rcp options
+// rcp compile switches
 
 // enable external getter and setter
 //#define RCP_OPTION_USE_EXTERNAL_GET_SET
