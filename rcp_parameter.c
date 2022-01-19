@@ -1449,7 +1449,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
             if (*size <= RCP_LANGUAGE_CODE_SIZE) return NULL;
 
             rcp_language_str* lng_strs = NULL;
-            char code[RCP_LANGUAGE_CODE_SIZE+1];
+            char code[RCP_LANGUAGE_CODE_SIZE];
 
             while (*data > 0)
             {
@@ -1460,7 +1460,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
                 }
 
                 // enough data - get code
-                strlcpy(code, data, RCP_LANGUAGE_CODE_SIZE+1);
+                strncpy(code, data, RCP_LANGUAGE_CODE_SIZE);
 
                 // create language string
                 rcp_language_str* lng_str = rcp_langstr_create(code);
@@ -1516,7 +1516,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
             if (*size <= RCP_LANGUAGE_CODE_SIZE) return NULL;
 
             rcp_language_str* lng_strs = NULL;
-            char code[RCP_LANGUAGE_CODE_SIZE+1];
+            char code[RCP_LANGUAGE_CODE_SIZE];
 
             while (*data > 0)
             {
@@ -1527,7 +1527,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
                 }
 
                 // enough data - get code
-                strlcpy(code, data, RCP_LANGUAGE_CODE_SIZE+1);
+                strncpy(code, data, RCP_LANGUAGE_CODE_SIZE);
 
                 // create language string
                 rcp_language_str* lng_str = rcp_langstr_create(code);

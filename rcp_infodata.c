@@ -44,16 +44,16 @@ rcp_infodata* rcp_infodata_create(const char* version, const char* applicationId
 
         if (version)
         {
-            size_t buf_len = strlen(version) + 1;
+            size_t str_len = strlen(version);
 
-            if (buf_len > 1)
+            if (str_len > 0)
             {
-                info_data->version = RCP_MALLOC(buf_len);
+                info_data->version = RCP_CALLOC(1, str_len + 1);
 
                 if (info_data->version)
                 {
                     RCP_DEBUG("*** infodata version: %p\n", info_data->version);
-                    strlcpy(info_data->version, version, buf_len);
+                    strncpy(info_data->version, version, str_len);
                 }
             }
         }

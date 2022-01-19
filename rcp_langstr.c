@@ -36,7 +36,7 @@ struct rcp_language_str
     // string type: string-tiny, string-short, string-long
     rcp_string_types type;
 
-    // the 3-character language code
+    // the 3-character language code (not 0-terminated)
     char code[RCP_LANGUAGE_CODE_SIZE];
 };
 
@@ -204,18 +204,18 @@ void rcp_langstr_copy_string(rcp_language_str* ls, const char* str, rcp_string_t
     _langstr_free_str(ls);
 
     // malloc
-    size_t buf_len = strlen(str) + 1;
-    if (buf_len > 1)
+    size_t str_len = strlen(str);
+    if (str_len > 0)
     {
-        ls->str = (char*)RCP_MALLOC(buf_len);
+        ls->str = (char*)RCP_CALLOC(1, str_len + 1);
 
         if (ls->str != NULL)
         {
             RCP_DEBUG("*** string data: %p\n", ls->str);
 
-            strlcpy(ls->str, str, buf_len);
+            strncpy(ls->str, str, str_len);
 
-            ls->length = buf_len - 1 + type + RCP_LANGUAGE_CODE_SIZE;
+            ls->length = str_len + type + RCP_LANGUAGE_CODE_SIZE;
             ls->type = type;
 
 //            RCP_DEBUG("string data: %s\n", ls->str);

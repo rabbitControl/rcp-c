@@ -162,14 +162,14 @@ void rcp_server_set_id(rcp_server* server, const char* id)
 
     if (id != NULL)
     {
-        size_t buf_len = strlen(id) + 1;
-        if (buf_len > 1)
+        size_t str_len = strlen(id);
+        if (str_len > 0)
         {
-            server->applicationId = RCP_CALLOC(1, buf_len);
+            server->applicationId = RCP_CALLOC(1, str_len + 1);
             if (server->applicationId)
             {
                 RCP_DEBUG("*** server id: %p\n", server->applicationId);
-                strlcpy(server->applicationId, id, buf_len);
+                strncpy(server->applicationId, id, str_len);
             }
         }
     }

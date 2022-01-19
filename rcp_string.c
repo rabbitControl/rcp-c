@@ -100,7 +100,7 @@ char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str
             RCP_DEBUG("*** tiny string: %p\n", (void*)*target);
 
             // copy data
-            strlcpy(*target, data, *str_length + 1);
+            strncpy(*target, data, *str_length);
 
             // decrease size
             *size -= *str_length;
@@ -142,7 +142,7 @@ char* rcp_read_short_string(char* data, size_t* size, char** target, uint16_t* s
             RCP_DEBUG("*** short string: %p\n", (void*)*target);
 
             // copy data
-            strlcpy(*target, (void*)(data), *str_length + 1);
+            strncpy(*target, data, *str_length);
 
             // decrease size
             *size -= *str_length;
@@ -185,7 +185,7 @@ char* rcp_read_long_string(char* data, size_t* size, char** target, uint32_t* st
             RCP_DEBUG("*** long string [%d]: %p\n", *str_length, (void*)*target);
 
             // copy data
-            strlcpy(*target, (void*)(data), *str_length + 1);
+            strncpy(*target, data, *str_length);
 
             // decrease size
             *size -= *str_length;
