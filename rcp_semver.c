@@ -17,9 +17,7 @@
 
 #include "rcp_semver.h"
 
-#include <stddef.h>
 #include <string.h>
-#include <stdlib.h>
 #include <stdbool.h>
 
 #include "rcp_logging.h"
@@ -49,9 +47,9 @@ bool rcp_semver_parse(const char* str, rcp_semver* semver)
     char* major = NULL;
     char* minor = NULL;
     char* patch = NULL;
-    char* rest = NULL;
-    char* tofree = NULL;
+
     char* input = NULL;
+    char* tofree = NULL;
     char* token = NULL;
 
     // init
@@ -61,47 +59,55 @@ bool rcp_semver_parse(const char* str, rcp_semver* semver)
 
     tofree = input = strdup(str);
 
-    token = strtok_r(input, ".", &rest);
-
-    while (token)
+    if (tofree)
     {
-        if (major == NULL)
+        token = strchr(input, '.');
+        while (token)
         {
-            major = token;
-            token = strtok_r(NULL, ".", &rest);
+            // write terminator
+            token[0] = 0;
+
+            if (major == NULL)
+            {
+                major = input;
+                input = token + 1;
+
+                token = strchr(input, '.');
+            }
+            else if (minor == NULL)
+            {
+                minor = input;
+                patch = token + 1;
+
+                // break on - or +
+                token = strchr(patch, '-');
+                if (token == NULL) token = strchr(patch, '+');
+            }
+            else
+            {
+                break;
+            }
         }
-        else if (minor == NULL)
+
+
+        if (isValidAsciiNumber(major) &&
+                isValidAsciiNumber(minor) &&
+                isValidAsciiNumber(patch))
         {
-            minor = token;
-            token = strtok_r(NULL, ".", &rest);
+            semver->major = strtol(major, NULL, 10);
+            semver->minor = strtol(minor, NULL, 10);
+            semver->patch = strtol(patch, NULL, 10);
+
+            ret = true;
         }
-        else if (patch == NULL)
+        else
         {
-            patch = token;
-            token = strtok_r(patch, "-", &rest);
+            RCP_DEBUG("invalid data - could not parse semver");
         }
-        else {
-            token = strtok_r(patch, "+", &rest);
-            break;
-        }
+
+        free(tofree);
     }
 
-    if (isValidAsciiNumber(major) &&
-            isValidAsciiNumber(minor) &&
-            isValidAsciiNumber(patch))
-    {
-        semver->major = strtol(major, NULL, 10);
-        semver->minor = strtol(minor, NULL, 10);
-        semver->patch = strtol(patch, NULL, 10);
-
-        ret = true;
-    }
-    else
-    {
-        RCP_DEBUG("invalid data - could not parse semver");
-    }
-
-    free(tofree);
 
     return ret;
 }
