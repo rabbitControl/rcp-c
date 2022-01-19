@@ -30,29 +30,29 @@
 
 typedef enum rcp_option_data_type
 {
-    NONE = 0,
-    BOOL,
-    I8,
-    I16,
-    I32,
-    I64,
-    FLOAT,
-    DOUBLE,
-    PTR,
-    OPT_TINY_STRING,
-    OPT_SHORT_STRING,
-    OPT_LONG_STRING,
-    LANGUAGE_STRING,
-    INFO_DATA,
-    PARAMETER_DATA,
+    RCP_NONE = 0,
+    RCP_BOOL,
+    RCP_I8,
+    RCP_I16,
+    RCP_I32,
+    RCP_I64,
+    RCP_F32,
+    RCP_F64,
+    RCP_PTR,
+    RCP_TINY_STRING,
+    RCP_SHORT_STRING,
+    RCP_LONG_STRING,
+    RCP_LANGUAGE_STRING,
+    RCP_INFO_DATA,
+    RCP_PARAMETER_DATA,
 } rcp_option_data_type;
 
 typedef enum rcp_option_flags
 {
-    FLAG_PTR_DATA = 0x01,
-    FLAG_OWNS_DATA = 0x02,
-    FLAG_OWNS_PTR_DATA = FLAG_PTR_DATA | FLAG_OWNS_DATA,
-    FLAG_DATA_CHANGED = 0x04
+    RCP_FLAG_PTR_DATA = 0x01,
+    RCP_FLAG_OWNS_DATA = 0x02,
+    RCP_FLAG_OWNS_PTR_DATA = RCP_FLAG_PTR_DATA | RCP_FLAG_OWNS_DATA,
+    RCP_FLAG_DATA_CHANGED = 0x04
 } rcp_option_flags;
 
 union rcp_option_value
@@ -92,12 +92,12 @@ struct rcp_option
 
 
 // changed
-#define RCP_OPTION_SET_CHANGED(x) (x->flags |= FLAG_DATA_CHANGED)
-#define RCP_OPTION_UNSET_CHANGED(x) (x->flags &= ~FLAG_DATA_CHANGED)
-#define RCP_OPTION_IS_CHANGED(x) (x->flags & FLAG_DATA_CHANGED)
+#define RCP_OPTION_SET_CHANGED(x) (x->flags |= RCP_FLAG_DATA_CHANGED)
+#define RCP_OPTION_UNSET_CHANGED(x) (x->flags &= ~RCP_FLAG_DATA_CHANGED)
+#define RCP_OPTION_IS_CHANGED(x) (x->flags & RCP_FLAG_DATA_CHANGED)
 // ptr data
-#define RCP_OPTION_OWNS_DATA(x) (x->flags & FLAG_OWNS_DATA)
-#define RCP_OPTION_IS_PTR(x) (x->flags & FLAG_PTR_DATA)
+#define RCP_OPTION_OWNS_DATA(x) (x->flags & RCP_FLAG_OWNS_DATA)
+#define RCP_OPTION_IS_PTR(x) (x->flags & RCP_FLAG_PTR_DATA)
 
 
 rcp_option* rcp_option_create(char prefix)
@@ -175,19 +175,19 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
     // datatypes are the same!
     dst->data_type = src->data_type;
 
-    if (src->data_type == OPT_TINY_STRING)
+    if (src->data_type == RCP_TINY_STRING)
     {
         rcp_option_copy_string(dst, src->data.str, TINY_STRING);
     }
-    else if (src->data_type == OPT_SHORT_STRING)
+    else if (src->data_type == RCP_SHORT_STRING)
     {
         rcp_option_copy_string(dst, src->data.str, SHORT_STRING);
     }
-    else if (src->data_type == OPT_LONG_STRING)
+    else if (src->data_type == RCP_LONG_STRING)
     {
         rcp_option_copy_string(dst, src->data.str, LONG_STRING);
     }
-    else if (src->data_type == LANGUAGE_STRING)
+    else if (src->data_type == RCP_LANGUAGE_STRING)
     {
         rcp_language_str* dst_lng_str = rcp_langstr_copy(src->data.lng_str);
         if (dst_lng_str != NULL)
@@ -195,19 +195,19 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
             // set
             dst->data.lng_str = dst_lng_str;
             dst->data_size = src->data_size;
-            dst->flags |= FLAG_OWNS_PTR_DATA;
+            dst->flags |= RCP_FLAG_OWNS_PTR_DATA;
             RCP_OPTION_SET_CHANGED(dst);
         }
     }
-    else if (src->data_type == INFO_DATA)
+    else if (src->data_type == RCP_INFO_DATA)
     {
         RCP_DEBUG("infodata should not be owned by the option!\n");
     }
-    else if (src->data_type == PARAMETER_DATA)
+    else if (src->data_type == RCP_PARAMETER_DATA)
     {
         RCP_DEBUG("parameter should not be owned by the option!\n");
     }
-    else if (src->data_type == PTR)
+    else if (src->data_type == RCP_PTR)
     {
         size_t size = src->data_size - RCP_OPTION_PTR_DATA_PREFIX_SIZE;
         dst->data.data = RCP_MALLOC(size);
@@ -219,7 +219,7 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
             memcpy(dst->data.data, src->data.data, size);
 
             dst->data_size = src->data_size;
-            dst->flags |= FLAG_OWNS_PTR_DATA;
+            dst->flags |= RCP_FLAG_OWNS_PTR_DATA;
             RCP_OPTION_SET_CHANGED(dst);
         }
         else
@@ -353,28 +353,28 @@ void rcp_option_free_data(rcp_option* opt)
 {
     if (opt == NULL) return;
 
-    if (opt->data_type != NONE)
+    if (opt->data_type != RCP_NONE)
     {
         if (RCP_OPTION_OWNS_DATA(opt))
         {
             RCP_DEBUG("OWNING DATA! - %d - datatype: %d\n", opt->prefix, opt->data_type);
 
-            if (opt->data_type == LANGUAGE_STRING)
+            if (opt->data_type == RCP_LANGUAGE_STRING)
             {
                 rcp_langstr_free_chain(opt->data.lng_str);
             }
-            else if (opt->data_type == INFO_DATA)
+            else if (opt->data_type == RCP_INFO_DATA)
             {
                 rcp_infodata_free(opt->data.info_data);
             }
-            else if (opt->data_type == PARAMETER_DATA)
+            else if (opt->data_type == RCP_PARAMETER_DATA)
             {
                 rcp_parameter_free(opt->data.parameter_data);
             }
-            else if (opt->data_type == OPT_TINY_STRING
-                     || opt->data_type == OPT_SHORT_STRING
-                     || opt->data_type == OPT_LONG_STRING
-                     || opt->data_type == PTR)
+            else if (opt->data_type == RCP_TINY_STRING
+                     || opt->data_type == RCP_SHORT_STRING
+                     || opt->data_type == RCP_LONG_STRING
+                     || opt->data_type == RCP_PTR)
             {
                 if (opt->data.data != NULL)
                 {
@@ -386,9 +386,9 @@ void rcp_option_free_data(rcp_option* opt)
         }
 
         opt->data.data = NULL;
-        opt->data_type = NONE;
+        opt->data_type = RCP_NONE;
         opt->data_size = 0;
-        opt->flags = FLAG_DATA_CHANGED;
+        opt->flags = RCP_FLAG_DATA_CHANGED;
     }
 }
 
@@ -448,15 +448,15 @@ size_t rcp_option_get_data_size(rcp_option* opt)
 
         RCP_DEBUG("size from cb: %ld\n", size);
 
-        if (opt->data_type == OPT_TINY_STRING)
+        if (opt->data_type == RCP_TINY_STRING)
         {
             return TINY_STRING + size;
         }
-        else if (opt->data_type == OPT_SHORT_STRING)
+        else if (opt->data_type == RCP_SHORT_STRING)
         {
             return SHORT_STRING + size;
         }
-        else if (opt->data_type == OPT_LONG_STRING)
+        else if (opt->data_type == RCP_LONG_STRING)
         {
             return LONG_STRING + size;
         }
@@ -476,25 +476,25 @@ size_t rcp_option_store_value(rcp_option* opt, void* data)
     // copy data    
     if (RCP_OPTION_IS_PTR(opt))
     {
-        if (opt->data_type == OPT_TINY_STRING)
+        if (opt->data_type == RCP_TINY_STRING)
         {
             return rcp_write_tiny_string(data, opt->data.str);
         }
-        else if (opt->data_type == OPT_SHORT_STRING)
+        else if (opt->data_type == RCP_SHORT_STRING)
         {
             return rcp_write_short_string(data, opt->data.str);
         }
-        else if (opt->data_type == OPT_LONG_STRING)
+        else if (opt->data_type == RCP_LONG_STRING)
         {
             return rcp_write_long_string(data, opt->data.str);
         }
-        else if (opt->data_type == PTR)
+        else if (opt->data_type == RCP_PTR)
         {
             // write length prefix
             _rcp_store32(data, (uint32_t)opt->data_size - RCP_OPTION_PTR_DATA_PREFIX_SIZE);
 
             // write data
-            memcpy(data + RCP_OPTION_PTR_DATA_PREFIX_SIZE, opt->data.data, opt->data_size - RCP_OPTION_PTR_DATA_PREFIX_SIZE);
+            memcpy((char*)data + RCP_OPTION_PTR_DATA_PREFIX_SIZE, opt->data.data, opt->data_size - RCP_OPTION_PTR_DATA_PREFIX_SIZE);
         }
         else
         {
@@ -539,7 +539,7 @@ bool rcp_option_set_bool(rcp_option* opt, bool value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == BOOL &&
+    if (opt->data_type == RCP_BOOL &&
             opt->data.b == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -547,7 +547,7 @@ bool rcp_option_set_bool(rcp_option* opt, bool value)
     }
 
     opt->data.b = value;
-    opt->data_type = BOOL;
+    opt->data_type = RCP_BOOL;
     opt->data_size = sizeof(bool);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -557,7 +557,7 @@ bool rcp_option_set_i8(rcp_option* opt, int8_t value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == I8 &&
+    if (opt->data_type == RCP_I8 &&
             opt->data.i8 == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -565,7 +565,7 @@ bool rcp_option_set_i8(rcp_option* opt, int8_t value)
     }
 
     opt->data.i8 = value;
-    opt->data_type = I8;
+    opt->data_type = RCP_I8;
     opt->data_size = sizeof(int8_t);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -575,7 +575,7 @@ bool rcp_option_set_i16(rcp_option* opt, int16_t value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == I16 &&
+    if (opt->data_type == RCP_I16 &&
             opt->data.i16 == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -583,7 +583,7 @@ bool rcp_option_set_i16(rcp_option* opt, int16_t value)
     }
 
     opt->data.i16 = value;
-    opt->data_type = I16;
+    opt->data_type = RCP_I16;
     opt->data_size = sizeof(int16_t);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -593,7 +593,7 @@ bool rcp_option_set_i32(rcp_option* opt, int32_t value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == I32 &&
+    if (opt->data_type == RCP_I32 &&
             opt->data.i32 == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -601,7 +601,7 @@ bool rcp_option_set_i32(rcp_option* opt, int32_t value)
     }
 
     opt->data.i32 = value;
-    opt->data_type = I32;
+    opt->data_type = RCP_I32;
     opt->data_size = sizeof(int32_t);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -611,7 +611,7 @@ bool rcp_option_set_i64(rcp_option* opt, int64_t value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == I64 &&
+    if (opt->data_type == RCP_I64 &&
             opt->data.i64 == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -619,7 +619,7 @@ bool rcp_option_set_i64(rcp_option* opt, int64_t value)
     }
 
     opt->data.i64 = value;
-    opt->data_type = I64;
+    opt->data_type = RCP_I64;
     opt->data_size = sizeof(int64_t);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -629,7 +629,7 @@ bool rcp_option_set_f32(rcp_option* opt, float value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == FLOAT &&
+    if (opt->data_type == RCP_F32 &&
             opt->data.f == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -637,7 +637,7 @@ bool rcp_option_set_f32(rcp_option* opt, float value)
     }
 
     opt->data.f = value;
-    opt->data_type = FLOAT;
+    opt->data_type = RCP_F32;
     opt->data_size = sizeof(float);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -647,7 +647,7 @@ bool rcp_option_set_f64(rcp_option* opt, double value)
 {
     if (opt == NULL) return false;
 
-    if (opt->data_type == DOUBLE &&
+    if (opt->data_type == RCP_F64 &&
             opt->data.d == value)
     {
         RCP_OPTION_UNSET_CHANGED(opt);
@@ -655,7 +655,7 @@ bool rcp_option_set_f64(rcp_option* opt, double value)
     }
 
     opt->data.d = value;
-    opt->data_type = DOUBLE;
+    opt->data_type = RCP_F64;
     opt->data_size = sizeof(double);
     RCP_OPTION_SET_CHANGED(opt);
     return true;
@@ -669,7 +669,7 @@ bool rcp_option_set_data(rcp_option* opt, void* data, size_t size)
     if (size == 0) return false;
 
     // compare data
-    if (opt->data_type == PTR)
+    if (opt->data_type == RCP_PTR)
     {
         if (opt->data.data == data) return false;
 
@@ -688,9 +688,9 @@ bool rcp_option_set_data(rcp_option* opt, void* data, size_t size)
 
     // external data needs to be freed externally
     opt->data.data = data;
-    opt->data_type = PTR;
+    opt->data_type = RCP_PTR;
     opt->data_size = size + RCP_OPTION_PTR_DATA_PREFIX_SIZE; // size + size prefix !!
-    opt->flags |= FLAG_PTR_DATA;
+    opt->flags |= RCP_FLAG_PTR_DATA;
     RCP_OPTION_SET_CHANGED(opt);
     return true;
 }
@@ -702,7 +702,7 @@ bool rcp_option_copy_data(rcp_option* opt, void* data, size_t size)
     if (size == 0) return false;
 
     // compare data
-    if (opt->data_type == PTR)
+    if (opt->data_type == RCP_PTR)
     {
         if (opt->data.data == data) return false;
 
@@ -721,8 +721,8 @@ bool rcp_option_copy_data(rcp_option* opt, void* data, size_t size)
     rcp_option_free_data(opt);
 
     // setup option
-    opt->data_type = PTR;
-    opt->flags |= FLAG_OWNS_PTR_DATA;
+    opt->data_type = RCP_PTR;
+    opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
 
     // copy data
     void* cpy = RCP_MALLOC(size);
@@ -750,13 +750,13 @@ static void _set_string_type(rcp_option* opt, rcp_string_types type)
     switch (type)
     {
     case TINY_STRING:
-        opt->data_type = OPT_TINY_STRING;
+        opt->data_type = RCP_TINY_STRING;
         break;
     case SHORT_STRING:
-        opt->data_type = OPT_SHORT_STRING;
+        opt->data_type = RCP_SHORT_STRING;
         break;
     case LONG_STRING:
-        opt->data_type = OPT_LONG_STRING;
+        opt->data_type = RCP_LONG_STRING;
         break;
     }
 }
@@ -771,13 +771,13 @@ bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
     {
         // use external set
         RCP_DEBUG("set string - call external set");
-        return opt->externalSetCb((void*)data, strlen(data));
+        return opt->externalSetCb((void*)str, strlen(str));
     }
 #endif
 
-    if (opt->data_type == OPT_TINY_STRING ||
-            opt->data_type == OPT_SHORT_STRING ||
-            opt->data_type == OPT_LONG_STRING)
+    if (opt->data_type == RCP_TINY_STRING ||
+            opt->data_type == RCP_SHORT_STRING ||
+            opt->data_type == RCP_LONG_STRING)
     {
         if (opt->data.str != NULL &&
                 strcmp(opt->data.str, str) == 0)
@@ -794,7 +794,7 @@ bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
 
     _set_string_type(opt, type);
     opt->data_size = type + strlen(str);
-    opt->flags |= FLAG_OWNS_PTR_DATA;
+    opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
     RCP_OPTION_SET_CHANGED(opt);
     return true;
 }
@@ -818,9 +818,9 @@ bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types 
     }
 #endif
 
-    if (opt->data_type == OPT_TINY_STRING ||
-            opt->data_type == OPT_SHORT_STRING ||
-            opt->data_type == OPT_LONG_STRING)
+    if (opt->data_type == RCP_TINY_STRING ||
+            opt->data_type == RCP_SHORT_STRING ||
+            opt->data_type == RCP_LONG_STRING)
     {
         if (opt->data.str != NULL &&
                 strcmp(opt->data.str, data) == 0)
@@ -835,31 +835,33 @@ bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types 
     rcp_option_free_data(opt);
 
     // get length of string to copy
-    size_t buf_len = strlen(data) + 1;
-
-    if (buf_len > 1)
+    size_t str_len = strlen(data);
+    if (str_len > 0)
     {
         // try to alloc memory
-        opt->data.str = RCP_CALLOC(1, buf_len);
-        if (opt->data.str == NULL)
+        opt->data.str = RCP_CALLOC(1, str_len + 1);
+        if (opt->data.str != NULL)
         {
-            RCP_ERROR("could not calloc for string: %d\n", (buf_len));
+            // memory successfully allocated
+            RCP_DEBUG("*** string: %p\n", opt->data.str);
+
+            // copy string
+            strncpy(opt->data.str, data, str_len);
+
+            RCP_OPTION_SET_CHANGED(opt);
+        }
+        else
+        {
+            RCP_ERROR("could not calloc for string: %d\n", (str_len));
             return false;
         }
 
-        // memory successfully allocated
-        RCP_DEBUG("*** string: %p\n", opt->data.str);
-
-        // copy string
-        strlcpy(opt->data.str, data, buf_len);
-
-        RCP_OPTION_SET_CHANGED(opt);
     }
 
     // setup option
     _set_string_type(opt, type);
-    opt->data_size = type + buf_len - 1;
-    opt->flags |= FLAG_OWNS_PTR_DATA;
+    opt->data_size = type + str_len - 1;
+    opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
 
     return true;
 }
@@ -869,7 +871,7 @@ bool rcp_option_move_langstr(rcp_option* opt, rcp_language_str* lng_str)
     if (opt == NULL) return false;
     if (lng_str == NULL) return false;
 
-    if (opt->data_type == LANGUAGE_STRING)
+    if (opt->data_type == RCP_LANGUAGE_STRING)
     {
         rcp_langstr_set_next(lng_str, opt->data.lng_str);
     }
@@ -881,9 +883,9 @@ bool rcp_option_move_langstr(rcp_option* opt, rcp_language_str* lng_str)
     }
 
     opt->data.lng_str = lng_str;
-    opt->data_type = LANGUAGE_STRING;
+    opt->data_type = RCP_LANGUAGE_STRING;
     opt->data_size = rcp_langstr_get_chain_size(lng_str);
-    opt->flags |= FLAG_OWNS_PTR_DATA;
+    opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
     RCP_OPTION_SET_CHANGED(opt);
     return true;
 }
@@ -947,7 +949,7 @@ bool rcp_option_copy_any_language(rcp_option* opt, const char* str, rcp_string_t
 bool rcp_option_get_bool(rcp_option* opt)
 {
     if (opt == NULL) return false;
-    if (opt->data_type != BOOL) return false;
+    if (opt->data_type != RCP_BOOL) return false;
 
     return opt->data.b;
 }
@@ -955,7 +957,7 @@ bool rcp_option_get_bool(rcp_option* opt)
 int8_t rcp_option_get_i8(rcp_option* opt)
 {
     if (opt == NULL) return 0;
-    if (opt->data_type != I8) return 0;
+    if (opt->data_type != RCP_I8) return 0;
 
     return opt->data.i8;
 }
@@ -963,7 +965,7 @@ int8_t rcp_option_get_i8(rcp_option* opt)
 int16_t rcp_option_get_i16(rcp_option* opt)
 {
     if (opt == NULL) return 0;
-    if (opt->data_type != I16) return 0;
+    if (opt->data_type != RCP_I16) return 0;
 
     return opt->data.i16;
 }
@@ -971,7 +973,7 @@ int16_t rcp_option_get_i16(rcp_option* opt)
 int32_t rcp_option_get_i32(rcp_option* opt)
 {
     if (opt == NULL) return 0;
-    if (opt->data_type != I32) return 0;
+    if (opt->data_type != RCP_I32) return 0;
 
     return opt->data.i32;
 }
@@ -979,7 +981,7 @@ int32_t rcp_option_get_i32(rcp_option* opt)
 int64_t rcp_option_get_i64(rcp_option* opt)
 {
     if (opt == NULL) return 0;
-    if (opt->data_type != I64) return 0;
+    if (opt->data_type != RCP_I64) return 0;
 
     return opt->data.i64;
 }
@@ -987,7 +989,7 @@ int64_t rcp_option_get_i64(rcp_option* opt)
 float rcp_option_get_float(rcp_option* opt)
 {
     if (opt == NULL) return 0.;
-    if (opt->data_type != FLOAT) return 0.;
+    if (opt->data_type != RCP_F32) return 0.;
 
     return opt->data.f;
 }
@@ -995,7 +997,7 @@ float rcp_option_get_float(rcp_option* opt)
 double rcp_option_get_double(rcp_option* opt)
 {
     if (opt == NULL) return 0.;
-    if (opt->data_type != DOUBLE) return 0.;
+    if (opt->data_type != RCP_F64) return 0.;
 
     return opt->data.d;
 }
@@ -1003,7 +1005,7 @@ double rcp_option_get_double(rcp_option* opt)
 void rcp_option_get_data(rcp_option* opt, void** out_data, size_t* out_size)
 {
     if (opt == NULL) return;
-    if (opt->data_type != PTR) return;
+    if (opt->data_type != RCP_PTR) return;
 
     *out_data = opt->data.data;
     *out_size = opt->data_size-4;
@@ -1012,9 +1014,9 @@ void rcp_option_get_data(rcp_option* opt, void** out_data, size_t* out_size)
 const char* rcp_option_get_string(rcp_option* opt, rcp_string_types type)
 {
     if (opt == NULL) return NULL;
-    if (type == TINY_STRING && opt->data_type != OPT_TINY_STRING) return NULL;
-    if (type == SHORT_STRING && opt->data_type != OPT_SHORT_STRING) return NULL;
-    if (type == LONG_STRING && opt->data_type != OPT_LONG_STRING) return NULL;
+    if (type == TINY_STRING && opt->data_type != RCP_TINY_STRING) return NULL;
+    if (type == SHORT_STRING && opt->data_type != RCP_SHORT_STRING) return NULL;
+    if (type == LONG_STRING && opt->data_type != RCP_LONG_STRING) return NULL;
 
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
     if (opt->externalGetCb != NULL)
@@ -1043,7 +1045,7 @@ const char* rcp_option_get_string(rcp_option* opt, rcp_string_types type)
 rcp_language_str* rcp_option_get_langstr(rcp_option* opt)
 {
     if (opt == NULL) return NULL;
-    if (opt->data_type != LANGUAGE_STRING) return NULL;
+    if (opt->data_type != RCP_LANGUAGE_STRING) return NULL;
     return opt->data.lng_str;
 }
 
@@ -1080,9 +1082,9 @@ void rcp_option_set_infodata(rcp_option* opt, rcp_infodata* data)
     rcp_option_free_data(opt);
 
     opt->data.info_data = data;
-    opt->data_type = INFO_DATA;
+    opt->data_type = RCP_INFO_DATA;
     opt->data_size = rcp_infodata_get_size(data);
-    opt->flags |= FLAG_PTR_DATA;
+    opt->flags |= RCP_FLAG_PTR_DATA;
     RCP_OPTION_SET_CHANGED(opt);
 }
 
@@ -1090,7 +1092,7 @@ void rcp_option_set_infodata(rcp_option* opt, rcp_infodata* data)
 rcp_infodata* rcp_option_get_infodata(rcp_option* opt)
 {
     if (opt == NULL) return NULL;
-    if (opt->data_type != INFO_DATA) return NULL;
+    if (opt->data_type != RCP_INFO_DATA) return NULL;
 
     return opt->data.info_data;
 }
@@ -1104,17 +1106,17 @@ void rcp_option_put_infodata(rcp_option* opt, rcp_infodata* data)
     rcp_option_set_infodata(opt, data);
 
     // take ownership
-    opt->flags |= FLAG_OWNS_DATA;
+    opt->flags |= RCP_FLAG_OWNS_DATA;
 }
 
 // full transfer
 rcp_infodata* rcp_option_take_infodata(rcp_option* opt)
 {
     if (opt == NULL) return NULL;
-    if (opt->data_type != INFO_DATA) return NULL;
+    if (opt->data_type != RCP_INFO_DATA) return NULL;
 
     // remove ownership
-    opt->flags &= ~FLAG_OWNS_DATA;
+    opt->flags &= ~RCP_FLAG_OWNS_DATA;
 
     return opt->data.info_data;
 }
@@ -1129,9 +1131,9 @@ void rcp_option_set_parameter(rcp_option* opt, rcp_parameter* data)
     rcp_option_free_data(opt);
 
     opt->data.parameter_data = data;
-    opt->data_type = PARAMETER_DATA;
+    opt->data_type = RCP_PARAMETER_DATA;
 //    opt->data_size = parameter_size(data); // -- done in rcp_option_size
-    opt->flags |= FLAG_PTR_DATA;
+    opt->flags |= RCP_FLAG_PTR_DATA;
     RCP_OPTION_SET_CHANGED(opt);
 }
 
@@ -1139,7 +1141,7 @@ void rcp_option_set_parameter(rcp_option* opt, rcp_parameter* data)
 rcp_parameter* rcp_option_get_parameter(rcp_option* opt)
 {
     if (opt == NULL) return NULL;
-    if (opt->data_type != PARAMETER_DATA) return NULL;
+    if (opt->data_type != RCP_PARAMETER_DATA) return NULL;
 
     return opt->data.parameter_data;
 }
@@ -1153,17 +1155,17 @@ void rcp_option_put_parameter(rcp_option* opt, rcp_parameter* data)
     rcp_option_set_parameter(opt, data);
 
     // take ownership
-    opt->flags |= FLAG_OWNS_DATA;
+    opt->flags |= RCP_FLAG_OWNS_DATA;
 }
 
 // full transfer
 rcp_parameter* rcp_option_take_parameter(rcp_option* opt)
 {
     if (opt == NULL) return NULL;
-    if (opt->data_type != PARAMETER_DATA) return NULL;
+    if (opt->data_type != RCP_PARAMETER_DATA) return NULL;
 
     // remove ownership
-    opt->flags &= ~FLAG_OWNS_DATA;
+    opt->flags &= ~RCP_FLAG_OWNS_DATA;
 
     return opt->data.parameter_data;
 }
@@ -1178,7 +1180,7 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
 
     switch (opt->data_type)
     {
-    case I8:
+    case RCP_I8:
         if (isunsigned)
         {
             RCP_INFO("\toption: 0x%02x - %s: %u\n", opt->prefix, prefix_str != NULL ? prefix_str : "", (uint8_t)opt->data.i8);
@@ -1188,7 +1190,7 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
             RCP_INFO("\toption: 0x%02x - %s: %d\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.i8);
         }
         break;
-    case I16:
+    case RCP_I16:
         if (isunsigned)
         {
             RCP_INFO("\toption: 0x%02x - %s: %u\n", opt->prefix, prefix_str != NULL ? prefix_str : "", (uint16_t)opt->data.i16);
@@ -1198,7 +1200,7 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
             RCP_INFO("\toption: 0x%02x - %s: %d\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.i16);
         }
         break;
-    case I32:
+    case RCP_I32:
         if (isunsigned)
         {
             RCP_INFO("\toption: 0x%02x - %s: %u\n", opt->prefix, prefix_str != NULL ? prefix_str : "", (uint32_t)opt->data.i32);
@@ -1208,7 +1210,7 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
             RCP_INFO("\toption: 0x%02x - %s: %d\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.i32);
         }
         break;
-    case I64:
+    case RCP_I64:
         if (isunsigned)
         {
             RCP_INFO("\toption: 0x%02x - %s: %llu\n", opt->prefix, prefix_str != NULL ? prefix_str : "", (uint64_t)opt->data.i64);
@@ -1218,27 +1220,27 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
             RCP_INFO("\toption: 0x%02x - %s: %llu\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.i64);
         }
         break;
-    case FLOAT:
+    case RCP_F32:
         RCP_INFO("\toption: 0x%02x - %s: %f\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.f);
         break;
-    case DOUBLE:
+    case RCP_F64:
         RCP_INFO("\toption: 0x%02x - %s: %f\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.d);
         break;
-    case OPT_TINY_STRING:
-    case OPT_SHORT_STRING:
-    case OPT_LONG_STRING:
+    case RCP_TINY_STRING:
+    case RCP_SHORT_STRING:
+    case RCP_LONG_STRING:
         RCP_INFO("\toption: 0x%02x - %s: %s\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.str);
         break;
-    case LANGUAGE_STRING:
+    case RCP_LANGUAGE_STRING:
         rcp_langstr_log_chain(opt->data.lng_str);
         break;
-    case INFO_DATA:
+    case RCP_INFO_DATA:
         rcp_infodata_log(opt->data.info_data);
         break;
-    case PARAMETER_DATA:
+    case RCP_PARAMETER_DATA:
         rcp_parameter_log(opt->data.parameter_data);
         break;
-    case PTR:
+    case RCP_PTR:
     default:
         RCP_INFO("\toption (data): 0x%02x - %s: %p\n", opt->prefix, prefix_str != NULL ? prefix_str : "", opt->data.data);
         break;
@@ -1255,11 +1257,11 @@ size_t rcp_option_get_size(rcp_option* opt, bool force)
     size_t size = 1; // prefix
 
     // ask option datatypes which might have changed
-    if (opt->data_type == PARAMETER_DATA)
+    if (opt->data_type == RCP_PARAMETER_DATA)
     {
         size += rcp_parameter_get_size(opt->data.parameter_data, force);
     }
-    else if (opt->data_type == INFO_DATA)
+    else if (opt->data_type == RCP_INFO_DATA)
     {
         size += rcp_infodata_get_size(opt->data.info_data);
     }
@@ -1271,15 +1273,15 @@ size_t rcp_option_get_size(rcp_option* opt, bool force)
 
         RCP_DEBUG("size from cb: %ld - %d\n", ext_size, opt->data_type);
 
-        if (opt->data_type == OPT_TINY_STRING)
+        if (opt->data_type == RCP_TINY_STRING)
         {
             size += TINY_STRING + ext_size;
         }
-        else if (opt->data_type == OPT_SHORT_STRING)
+        else if (opt->data_type == RCP_SHORT_STRING)
         {
             size += SHORT_STRING + ext_size;
         }
-        else if (opt->data_type == OPT_LONG_STRING)
+        else if (opt->data_type == RCP_LONG_STRING)
         {
             size += LONG_STRING + ext_size;
         }
@@ -1331,15 +1333,15 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
 
         if (ext_data != NULL)
         {
-            if (opt->data_type == OPT_TINY_STRING)
+            if (opt->data_type == RCP_TINY_STRING)
             {
                 written += rcp_write_tiny_string(data, (char*)ext_data);
             }
-            else if (opt->data_type == OPT_SHORT_STRING)
+            else if (opt->data_type == RCP_SHORT_STRING)
             {
                 written += rcp_write_short_string(data, (char*)ext_data);
             }
-            else if (opt->data_type == OPT_LONG_STRING)
+            else if (opt->data_type == RCP_LONG_STRING)
             {
                 written += rcp_write_long_string(data, (char*)ext_data);
             }
@@ -1356,19 +1358,19 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
     else
     {
 #endif
-        if (opt->data_type == OPT_TINY_STRING)
+        if (opt->data_type == RCP_TINY_STRING)
         {
             written += rcp_write_tiny_string(data, opt->data.str);
         }
-        else if (opt->data_type == OPT_SHORT_STRING)
+        else if (opt->data_type == RCP_SHORT_STRING)
         {
             written += rcp_write_short_string(data, opt->data.str);
         }
-        else if (opt->data_type == OPT_LONG_STRING)
+        else if (opt->data_type == RCP_LONG_STRING)
         {
             written += rcp_write_long_string(data, opt->data.str);
         }
-        else if (opt->data_type == LANGUAGE_STRING)
+        else if (opt->data_type == RCP_LANGUAGE_STRING)
         {
             size_t written_len = rcp_langstr_write(rcp_option_get_langstr(opt), data, size - written);
             if (written_len == 0)
@@ -1377,7 +1379,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
             }
             written += written_len;
         }
-        else if (opt->data_type == INFO_DATA)
+        else if (opt->data_type == RCP_INFO_DATA)
         {
             size_t written_len = rcp_infodata_write(opt->data.info_data, data, size - written);
             if (written_len == 0)
@@ -1386,7 +1388,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
             }
             written += written_len;
         }
-        else if (opt->data_type == PARAMETER_DATA)
+        else if (opt->data_type == RCP_PARAMETER_DATA)
         {
             size_t written_len = rcp_parameter_write(opt->data.parameter_data, data, size - written, force);
             if (written_len == 0)
