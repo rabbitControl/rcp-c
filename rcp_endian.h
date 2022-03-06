@@ -25,12 +25,16 @@ extern "C"{
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifndef ntohs
-uint16_t ntohs(uint16_t x);
-#endif
+#ifdef _WIN32
+  #include <winsock.h>
+#else
+  #ifndef ntohs
+  uint16_t ntohs(uint16_t x);
+  #endif
 
-#ifndef ntohl
-uint32_t ntohl(uint32_t x);
+  #ifndef ntohl
+  uint32_t ntohl(uint32_t x);
+  #endif
 #endif
 
 #ifndef ntohll

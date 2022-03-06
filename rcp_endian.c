@@ -40,28 +40,30 @@ __bswap64(uint64_t _x)
       ((_x << 40) & ((uint64_t)0xff << 48)) | ((_x << 56))));
 }
 
-#ifndef ntohs
-uint16_t ntohs(uint16_t x)
-{
-#if _BYTE_ORDER == _LITTLE_ENDIAN
-  // swap
-  return __bswap16(x);
-#else
-  return x;  
-#endif
-}
-#endif
+#ifndef _WIN32
+  #ifndef ntohs
+  uint16_t ntohs(uint16_t x)
+  {
+  #if _BYTE_ORDER == _LITTLE_ENDIAN
+    // swap
+    return __bswap16(x);
+  #else
+    return x;
+  #endif
+  }
+  #endif
 
-#ifndef ntohl
-uint32_t ntohl(uint32_t x)
-{
-#if _BYTE_ORDER == _LITTLE_ENDIAN
-  // swap
-  return __bswap32(x);
-#else
-  return x;  
-#endif
-}
+  #ifndef ntohl
+  uint32_t ntohl(uint32_t x)
+  {
+  #if _BYTE_ORDER == _LITTLE_ENDIAN
+    // swap
+    return __bswap32(x);
+  #else
+    return x;
+  #endif
+  }
+  #endif
 #endif
 
 #ifndef ntohll
@@ -71,7 +73,7 @@ uint64_t ntohll(uint64_t x)
   // swap
   return __bswap64(x);
 #else
-  return x;  
+  return x;
 #endif
 }
 #endif
