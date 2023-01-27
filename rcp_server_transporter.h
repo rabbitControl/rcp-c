@@ -48,12 +48,12 @@ rcp_server_transporter* rcp_server_transporter_setup(rcp_server_transporter* t,
                                                      void (*sendToOne)(rcp_server_transporter* transporter, char* data, size_t size, void* id),
                                                      void (*sendTAll)(rcp_server_transporter* transporter, char* data, size_t size, void* excludeId));
 
-// callback
+// callback (set by rcp_server)
 void rcp_server_transporter_set_recv_cb(rcp_server_transporter* t,
                                         rcp_server* server,
                                         void (*received)(rcp_server* server, char* data, size_t size, void* client));
 
-// call callback
+// call callback (call when new data arrived)
 void rcp_server_transporter_call_recv_cb(rcp_server_transporter* t, char* data, size_t size, void* client);
 
 
