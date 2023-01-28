@@ -138,6 +138,7 @@ rcp_language_str* rcp_langstr_get_next(rcp_language_str* ls)
 size_t rcp_langstr_get_size(rcp_language_str* ls)
 {
     if (ls == NULL) return 0;
+
     return ls->length;
 }
 
@@ -184,7 +185,10 @@ static void _langstr_free_str(rcp_language_str* ls)
 }
 
 
-
+/* rcp_langstr_set_string
+ *  move str into langstr:
+ *  langstr "owns" the data and attempts to free it
+ */
 // full transfer
 void rcp_langstr_set_string(rcp_language_str* ls, const char* str, size_t str_len, rcp_string_types type)
 {
@@ -197,6 +201,10 @@ void rcp_langstr_set_string(rcp_language_str* ls, const char* str, size_t str_le
     ls->type = type;
 }
 
+/* rcp_langstr_copy_string
+ *  copy str into langstr:
+ *  langstr "owns" the data and attempts to free it
+ */
 void rcp_langstr_copy_string(rcp_language_str* ls, const char* str, rcp_string_types type)
 {
     if (ls == NULL) return;
@@ -223,7 +231,7 @@ void rcp_langstr_copy_string(rcp_language_str* ls, const char* str, rcp_string_t
         }
         else
         {
-            RCP_ERROR("could not malloc for str data\n");
+            RCP_ERROR("could not allocate for string\n");
         }
     }
 }

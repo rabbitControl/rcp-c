@@ -120,18 +120,11 @@ rcp_option* rcp_option_get_create(rcp_option** options, char prefix)
 {
     if (options == NULL) return NULL;
 
-    // check if we have label
-    rcp_option* opt = *options;
+    // check if option with prefix exists
+    rcp_option* opt = rcp_option_get(*options, prefix);
+    if (opt != NULL) return opt;
 
-    while (opt != NULL)
-    {
-        if (opt->prefix == prefix)
-        {
-            return opt;
-        }
-        opt = opt->next;
-    }
-
+    // no option with prefix
     // need to create option with prefix
     opt = rcp_option_create(prefix);
     if (opt != NULL)
@@ -147,9 +140,8 @@ rcp_option* rcp_option_get(rcp_option* options, char prefix)
 {
     if (options == NULL) return NULL;
 
-    // check if we have label
+    // check if option with prefix exists
     rcp_option* opt = options;
-
     while (opt != NULL)
     {
         if (opt->prefix == prefix)
@@ -498,9 +490,9 @@ size_t rcp_option_store_value(rcp_option* opt, void* data)
         }
         else
         {
-//        LANGUAGE_STRING
-//        INFO_DATA
-//        PARAMETER_DATA
+//            LANGUAGE_STRING
+//            INFO_DATA
+//            PARAMETER_DATA
 
             RCP_DEBUG("not handled!\n");
             return 0;
@@ -761,6 +753,10 @@ static void _set_string_type(rcp_option* opt, rcp_string_types type)
     }
 }
 
+/* rcp_option_move_string
+ *  move str into option:
+ *  the option "owns" the data and attempts to free it on rcp_option_free()
+ */
 bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
 {
     if (opt == NULL) return false;
@@ -799,6 +795,10 @@ bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
     return true;
 }
 
+/* rcp_option_copy_string
+ *  copy str into option:
+ *  the option "owns" the data and attempts to free it on rcp_option_free()
+ */
 bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types type)
 {
     if (opt == NULL) return false;
@@ -839,7 +839,7 @@ bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types 
     if (str_len > 0)
     {
         // try to alloc memory
-        opt->data.str = RCP_CALLOC(1, str_len + 1);
+        opt->data.str = (char*)RCP_CALLOC(1, str_len + 1);
         if (opt->data.str != NULL)
         {
             // memory successfully allocated
@@ -852,10 +852,9 @@ bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types 
         }
         else
         {
-            RCP_ERROR("could not calloc for string: %d\n", (str_len));
+            RCP_ERROR("could not calloc for string: %lu\n", str_len);
             return false;
         }
-
     }
 
     // setup option
