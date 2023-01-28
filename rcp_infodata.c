@@ -134,7 +134,7 @@ size_t rcp_infodata_write(rcp_infodata* infodata, char* dst, size_t size)
 
     // write mandatory version
     // TODO: secure this call - check size first!
-    uint8_t str_len = rcp_write_tiny_string(dst, infodata->version);
+    size_t str_len = rcp_write_tiny_string(dst, infodata->version);
 
     written += str_len;
 

@@ -37,9 +37,9 @@ char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size
 char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* size, char option_prefix);
 
 
-uint8_t rcp_write_tiny_string(char* dst, const char* str);
-uint16_t rcp_write_short_string(char* dst, const char* str);
-uint32_t rcp_write_long_string(char* dst, const char* str);
+size_t rcp_write_tiny_string(char* dst, const char* str);
+size_t rcp_write_short_string(char* dst, const char* str);
+size_t rcp_write_long_string(char* dst, const char* str);
 
 #ifdef __cplusplus
 } // extern "C"

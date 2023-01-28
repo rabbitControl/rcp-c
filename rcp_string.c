@@ -25,60 +25,68 @@
 #include "rcp_logging.h"
 #include "rcp_endian.h"
 
+// read tiny string from data and store it into option
 char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size, char option_prefix)
 {
     if (options == NULL) return NULL;
 
-    uint8_t str_len;
+    uint8_t str_len = 0;
     char* string_data = NULL;
 
-    char* r_data = rcp_read_tiny_string(data, size, &string_data, &str_len);
-    if (r_data == NULL) return NULL;
+    // copy string from data into string_data
+    data = rcp_read_tiny_string(data, size, &string_data, &str_len);
 
-    data = r_data;
-
-    RCP_DEBUG("tiny string: %s\n", string_data);
-
-    if (str_len > 0
-            && string_data != NULL)
+    if (data &&
+            str_len > 0 &&
+            string_data != NULL)
     {
+        RCP_DEBUG("tiny string: %s\n", string_data);
+
         rcp_option* opt = rcp_option_get_create(options, option_prefix);
-        rcp_option_free_data(opt);       
+        rcp_option_free_data(opt);
 
         // full transfer
         rcp_option_move_string(opt, string_data, TINY_STRING);
+    }
+    else
+    {
+        RCP_DEBUG("error reading tiny string: %s\n", string_data);
     }
 
     return data;
 }
 
+// read short string from data and store it into option
 char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* size, char option_prefix)
 {
+    if (options == NULL) return NULL;
+
     uint16_t str_len;
     char* string_data = NULL;
 
-    if (options == NULL) return NULL;
+    data = rcp_read_short_string(data, size, &string_data, &str_len);
 
-    char* r_data = rcp_read_short_string(data, size, &string_data, &str_len);
-    if (r_data == NULL) return NULL;
-
-    data = r_data;
-
-    RCP_DEBUG("short string: %s\n", string_data);
-
-    if (str_len > 0
-            && string_data != NULL)
+    if (data &&
+            str_len > 0 &&
+            string_data != NULL)
     {
+        RCP_DEBUG("short string: %s\n", string_data);
+
         rcp_option* opt = rcp_option_get_create(options, option_prefix);
         rcp_option_free_data(opt);
 
         // full transfer
         rcp_option_move_string(opt, string_data, SHORT_STRING);
     }
+    else
+    {
+        RCP_DEBUG("error reading short string: %s\n", string_data);
+    }
 
     return data;
 }
 
+// copy tiny-string from data into target
 char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str_length)
 {
     if (data == NULL) return NULL;
@@ -207,7 +215,7 @@ char* rcp_read_long_string(char* data, size_t* size, char** target, uint32_t* st
 }
 
 
-uint8_t rcp_write_tiny_string(char* dst, const char* str)
+size_t rcp_write_tiny_string(char* dst, const char* str)
 {
     if (dst == NULL) return 0;
 
@@ -227,10 +235,10 @@ uint8_t rcp_write_tiny_string(char* dst, const char* str)
     }
 
     // return offset
-    return (uint8_t)str_len + TINY_STRING;
+    return str_len + TINY_STRING;
 }
 
-uint16_t rcp_write_short_string(char* dst, const char* str)
+size_t rcp_write_short_string(char* dst, const char* str)
 {
     if (dst == NULL) return 0;
 
@@ -249,10 +257,10 @@ uint16_t rcp_write_short_string(char* dst, const char* str)
     }
 
     // return offset
-    return (uint16_t)str_len + SHORT_STRING;
+    return str_len + SHORT_STRING;
 }
 
-uint32_t rcp_write_long_string(char* dst, const char* str)
+size_t rcp_write_long_string(char* dst, const char* str)
 {
     if (dst == NULL) return 0;
 
@@ -273,5 +281,5 @@ uint32_t rcp_write_long_string(char* dst, const char* str)
     }
 
     // return offset
-    return (uint16_t)str_len + LONG_STRING;
+    return str_len + LONG_STRING;
 }
