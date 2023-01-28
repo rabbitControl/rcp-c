@@ -460,7 +460,7 @@ size_t rcp_option_get_data_size(rcp_option* opt)
     return opt->data_size;
 }
 
-size_t rcp_option_store_value(rcp_option* opt, void* data)
+size_t rcp_option_write_value(rcp_option* opt, void* data)
 {
     if (opt == NULL) return 0;
     if (data == NULL) return 0;
@@ -1398,7 +1398,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
         }
         else
         {
-            written += rcp_option_store_value(opt, data);
+            written += rcp_option_write_value(opt, data);
         }
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
     }

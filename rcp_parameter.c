@@ -1958,16 +1958,13 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
     return written;
 }
 
-size_t rcp_parameter_write_updatevalue(rcp_parameter* parameter, char* data, size_t size)
+size_t rcp_parameter_write_updatevalue(rcp_parameter* parameter, char* dst, size_t size)
 {
-    if (data == NULL
+    if (dst == NULL
             || parameter == NULL)
     {
         return 0;
     }
-
-    // write data
-    size_t written = 0;
 
     if (size < 2)
     {
@@ -1975,28 +1972,33 @@ size_t rcp_parameter_write_updatevalue(rcp_parameter* parameter, char* data, siz
         return 0;
     }
 
-    // write parameter id
-    _rcp_store16(data, (uint16_t)parameter->id);
-    data += 2;
-    written += 2;
+    // write data
+    size_t written = 0;
 
+    // write parameter id
+    _rcp_store16(dst, (uint16_t)parameter->id);
+    written += 2;
+    // check
     if (written >= size) return 0;
+    // move pointer
+    dst += 2;
 
 
     // write datatype-id
     // write type id
     rcp_typedefinition* typedefinition = rcp_parameter_get_typedefinition(parameter);
     rcp_datatype td = rcp_typedefinition_get_type_id(typedefinition);
-    data[0] = td;
-    data += 1;
+    dst[0] = td;
     written += 1;
-
+    // check
     if (written >= size) return 0;
+    // move pointer
+    dst += 1;
 
     if (rcp_parameter_is_value(parameter))
     {
         // write value
-        written += rcp_option_store_value(RCP_VALUE_PARAMETER(parameter)->value_option, data);
+        written += rcp_option_write_value(RCP_VALUE_PARAMETER(parameter)->value_option, dst);
     }
 
     return written;
@@ -2015,7 +2017,6 @@ void rcp_parameter_all_options_changed(rcp_parameter* parameter)
     }
 
     rcp_typedefinition_all_options_changed(parameter->typedefinition);
-
 }
 
 void rcp_parameter_all_options_unchanged(rcp_parameter* parameter)

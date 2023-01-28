@@ -98,8 +98,8 @@ rcp_parameter* rcp_option_take_parameter(rcp_option* opt); // full transfer
 size_t rcp_option_get_size(rcp_option* opt, bool force);
 // write option
 size_t rcp_option_write(rcp_option* opt, char* dst, size_t size, bool force);
-// store value into data, return size
-size_t rcp_option_store_value(rcp_option* opt, void* data);
+// write value into data, return size
+size_t rcp_option_write_value(rcp_option* opt, void* dst);
 // get size of data
 size_t rcp_option_get_data_size(rcp_option* opt);
 
