@@ -514,101 +514,108 @@ void rcp_manager_update(rcp_manager* manager)
 
     //-----------------------------
     // send remove parameters first
-    pl = manager->removed_parameters;
-    packet = rcp_packet_create(COMMAND_REMOVE);
-    while (pl)
+    if (manager->removed_parameters != NULL)
     {
-        next = pl->next;
-
-        // only serialize if we have a callback
-        if (packet &&
-                manager->sendDataCbAll != NULL)
+        pl = manager->removed_parameters;
+        packet = rcp_packet_create(COMMAND_REMOVE);
+        while (pl)
         {
-            rcp_packet_set_iddata(packet, rcp_parameter_get_id(pl->parameter));
+            next = pl->next;
 
-            data_out_size = rcp_packet_write(packet, &data_out, false);
-
-            if (data_out_size > 0 &&
-                    data_out != NULL)
+            // only serialize if we have a callback
+            if (packet &&
+                    manager->sendDataCbAll != NULL)
             {
-                // send it out...
-                manager->sendDataCbAll(manager->user, data_out, data_out_size);
+                rcp_packet_set_iddata(packet, rcp_parameter_get_id(pl->parameter));
 
-                RCP_DEBUG("+++ data out: %p\n", data_out);
-                RCP_FREE(data_out);
-                data_out = NULL;
-                data_out_size = 0;
+                data_out_size = rcp_packet_write(packet, &data_out, false);
+
+                if (data_out_size > 0 &&
+                        data_out != NULL)
+                {
+                    // send it out...
+                    manager->sendDataCbAll(manager->user, data_out, data_out_size);
+
+                    RCP_DEBUG("+++ data out: %p\n", data_out);
+                    RCP_FREE(data_out);
+                    data_out = NULL;
+                }
             }
+
+            // free parameter and list entry
+            rcp_parameter_free(pl->parameter);
+            RCP_DEBUG("+++ parameter list entry: %p\n", pl);
+            RCP_FREE(pl);
+
+            pl = next;
+        } // while
+
+        manager->removed_parameters = NULL;
+
+        if (packet)
+        {
+            rcp_packet_free(packet);
+            packet = NULL;
         }
-
-        // free parameter and list entry
-        rcp_parameter_free(pl->parameter);
-        RCP_DEBUG("+++ parameter list entry: %p\n", pl);
-        RCP_FREE(pl);
-
-        pl = next;
-    } // while
-    manager->removed_parameters = NULL;
-
-    if (packet)
-    {
-        rcp_packet_free(packet);
-        packet = NULL;
     }
+
 
     //-----------------------------
     // send < parameters
-    pl = manager->dirty_parameters;
-    packet = rcp_packet_create(COMMAND_UPDATE);
-    while (pl != NULL)
+    if (manager->dirty_parameters != NULL)
     {
-        next = pl->next;
-
-//        RCP_DEBUG("sending dirty parameter(%d) - %p\n", parameter_get_id(pl->parameter), pl->parameter);
-
-        if (packet &&
-                manager->sendDataCbAll != NULL)
+        pl = manager->dirty_parameters;
+        packet = rcp_packet_create(COMMAND_UPDATE);
+        while (pl != NULL)
         {
-            // set command
-            if (rcp_parameter_only_value_changed(pl->parameter))
+            next = pl->next;
+
+    //        RCP_DEBUG("sending dirty parameter(%d) - %p\n", parameter_get_id(pl->parameter), pl->parameter);
+
+            if (packet &&
+                    manager->sendDataCbAll != NULL)
             {
-                rcp_packet_set_command(packet, COMMAND_UPDATEVALUE);
+                // set command
+                if (rcp_parameter_only_value_changed(pl->parameter))
+                {
+                    rcp_packet_set_command(packet, COMMAND_UPDATEVALUE);
+                }
+                else
+                {
+                    rcp_packet_set_command(packet, COMMAND_UPDATE);
+                }
+
+                // set parameter (no transfer)
+                rcp_packet_set_parameter(packet, pl->parameter);
+
+                data_out_size = rcp_packet_write(packet, &data_out, false);
+
+                if (data_out_size > 0 &&
+                        data_out != NULL)
+                {
+                    // send it out...
+                    manager->sendDataCbAll(manager->user, data_out, data_out_size);
+
+                    RCP_DEBUG("+++ data out: %p\n", data_out);
+                    RCP_FREE(data_out);
+                    data_out = NULL;
+                }
             }
-            else
-            {
-                rcp_packet_set_command(packet, COMMAND_UPDATE);
-            }
 
-            // set parameter (no transfer)
-            rcp_packet_set_parameter(packet, pl->parameter);
+            // remove list element
+            RCP_DEBUG("+++ dirty parameter list entry: %p\n", pl);
+            RCP_FREE(pl);
 
-            data_out_size = rcp_packet_write(packet, &data_out, false);
+            pl = next;
+        } // while
 
-            if (data_out_size > 0 &&
-                    data_out != NULL)
-            {
-                // send it out...
-                manager->sendDataCbAll(manager->user, data_out, data_out_size);
+        manager->dirty_parameters = NULL;
 
-                RCP_DEBUG("+++ data out: %p\n", data_out);
-                RCP_FREE(data_out);
-                data_out = NULL;
-                data_out_size = 0;
-            }
+        //
+        if (packet)
+        {
+            rcp_packet_free(packet);
         }
-
-        // remove list element
-        RCP_DEBUG("+++ dirty parameter list entry: %p\n", pl);
-        RCP_FREE(pl);
-
-        pl = next;
-    } // while
-    manager->dirty_parameters = NULL;
-
-    //
-    if (packet)
-    {
-        rcp_packet_free(packet);
     }
 }
 
