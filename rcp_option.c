@@ -860,7 +860,7 @@ bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types 
 
     // setup option
     _set_string_type(opt, type);
-    opt->data_size = type + str_len - 1;
+    opt->data_size = type + str_len;
     opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
 
     return true;
