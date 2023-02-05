@@ -39,6 +39,7 @@ struct rcp_server_transporter
 
     // server reference
     rcp_server* server;
+    void* user;
 };
 
 #define RCP_SERVER_TRANSPORTER(x) ((rcp_server_transporter*)x)

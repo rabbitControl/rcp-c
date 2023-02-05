@@ -40,6 +40,7 @@ struct rcp_client_transporter
     void (*disconnected)(rcp_client* client);
 
     rcp_client* client;
+    void* user;
 };
 
 
