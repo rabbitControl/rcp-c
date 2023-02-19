@@ -29,8 +29,8 @@ rcp_server_log_transporter* rcp_log_transporter_create()
         RCP_DEBUG("*** log transporter: %p\n", t);
 
         rcp_server_transporter_setup(RCP_TRANSPORTER(t),
-                                 rcp_log_transporter_send_to_one,
-                                 rcp_log_transporter_send_to_all);
+                                     rcp_log_transporter_send_to_one,
+                                     rcp_log_transporter_send_to_all);
     }
 
     return t;

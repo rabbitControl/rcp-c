@@ -33,6 +33,7 @@ struct rcp_client_transporter
 {
     void (*send)(rcp_client_transporter* transporter, char* data, size_t size);
 
+    // used internally by client:
     // received callback
     void (*received)(rcp_client* client, char* data, size_t size);
     // connected and disconnected callbacks
@@ -47,6 +48,7 @@ struct rcp_client_transporter
 rcp_client_transporter* rcp_client_transporter_setup(rcp_client_transporter* t,
                                                      void (*send)(rcp_client_transporter* transporter, char* data, size_t size));
 
+// internally
 // callbacks
 void rcp_client_transporter_set_recv_cb(rcp_client_transporter* t,
                                         rcp_client* client,

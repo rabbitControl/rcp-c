@@ -33,10 +33,17 @@ extern "C"{
 
 #include "rcp_types.h"
 
+// version of rcp protocol implemented
 #define RCP_VERSION "0.1.0"
 #define RCP_VERSION_MAJOR 0
 #define RCP_VERSION_MINOR 1
 #define RCP_VERSION_PATCH 0
+
+// version of c implementation
+#define RCP_C_VERSION "1.0.1"
+#define RCP_C_VERSION_MAJOR 1
+#define RCP_C_VERSION_MINOR 0
+#define RCP_C_VERSION_PATCH 1
 
 #define RCP_SETFLAG(x, f) (x |= (1 << f))
 #define RCP_CLEARFLAG(x, f) (x &= ~(1 << f))
