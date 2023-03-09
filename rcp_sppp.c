@@ -458,3 +458,13 @@ char rcp_sppp_get_bypass(rcp_sppp* pp)
 
     return 0;
 }
+
+size_t rcp_sppp_get_packet_size(rcp_sppp* pp)
+{
+    if (pp != NULL)
+    {
+        return pp->packet_size;
+    }
+
+    return 0;
+}

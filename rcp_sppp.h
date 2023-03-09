@@ -50,6 +50,9 @@ void rcp_sppp_data(rcp_sppp* pp, char* data, size_t size);
 void rcp_sppp_set_bypass(rcp_sppp* pp, unsigned char bypass);
 char rcp_sppp_get_bypass(rcp_sppp* pp);
 
+// get packet size
+size_t rcp_sppp_get_packet_size(rcp_sppp* pp);
+
 #ifdef __cplusplus
 }
 #endif
