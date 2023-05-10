@@ -24,10 +24,12 @@ extern "C"{
 #endif
 
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include "rcp.h"
 #include "rcp_typedefinition_type.h"
 #include "rcp_option_type.h"
+#include "rcp_stringlist.h"
 
 
 // create / free
@@ -53,16 +55,21 @@ void rcp_typedefinition_all_options_unchanged(rcp_typedefinition* typedefinition
 bool rcp_typedefinition_changed(rcp_typedefinition* typedefinition);
 
 // setter / getter
+bool rcp_typedefinition_set_option_bool(rcp_typedefinition* typedefinition, char prefix, bool value);
 bool rcp_typedefinition_set_option_i8(rcp_typedefinition* typedefinition, char prefix, int8_t value);
 bool rcp_typedefinition_set_option_i16(rcp_typedefinition* typedefinition, char prefix, int16_t value);
 bool rcp_typedefinition_set_option_i32(rcp_typedefinition* typedefinition, char prefix, int32_t value);
 bool rcp_typedefinition_set_option_f32(rcp_typedefinition* typedefinition, char prefix, float value);
+bool rcp_typedefinition_set_option_string_tiny(rcp_typedefinition* typedefinition, char prefix, const char* value); // copy
+bool rcp_typedefinition_set_option_stringlist(rcp_typedefinition* typedefinition, char prefix, int count, va_list args); // copy
 
+bool rcp_typedefinition_get_option_bool(rcp_typedefinition* typedefinition, char prefix, bool defaultValue);
 int8_t rcp_typedefinition_get_option_i8(rcp_typedefinition* typedefinition, char prefix, int8_t defaultValue);
 int16_t rcp_typedefinition_get_option_i16(rcp_typedefinition* typedefinition, char prefix, int16_t defaultValue);
 int32_t rcp_typedefinition_get_option_i32(rcp_typedefinition* typedefinition, char prefix, int32_t defaultValue);
 float rcp_typedefinition_get_option_f32(rcp_typedefinition* typedefinition, char prefix, float defaultValue);
-
+const char* rcp_typedefinition_get_option_string_tiny(rcp_typedefinition* typedefinition, char prefix); // no transfer
+rcp_stringlist* rcp_typedefinition_get_option_stringlist(rcp_typedefinition* typedefinition, char prefix); // no transfer
 
 // logging
 void rcp_typedefinition_log(rcp_typedefinition* typedefinition);

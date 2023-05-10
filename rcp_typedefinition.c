@@ -89,69 +89,78 @@ bool rcp_typedefinition_has_option(rcp_typedefinition* typedefinition, char pref
     return false;
 }
 
-static bool _set_option_i8(rcp_option** options, char prefix, int8_t value)
+// set options
+bool rcp_typedefinition_set_option_bool(rcp_typedefinition* typedefinition, char prefix, bool value)
 {
-	rcp_option* opt = rcp_option_get_create(options, prefix);
-	return rcp_option_set_i8(opt, value);
-}
-static bool _set_option_i16(rcp_option** options, char prefix, int16_t value)
-{
-	rcp_option* opt = rcp_option_get_create(options, prefix);
-	return rcp_option_set_i16(opt, value);
-}
-static bool _set_option_i32(rcp_option** options, char prefix, int32_t value)
-{
-	rcp_option* opt = rcp_option_get_create(options, prefix);
-	return rcp_option_set_i32(opt, value);
-}
-static bool _set_option_f32(rcp_option** options, char prefix, float value)
-{
-	rcp_option* opt = rcp_option_get_create(options, prefix);
-	return rcp_option_set_f32(opt, value);
+    if (typedefinition == NULL) return false;
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+	return rcp_option_set_bool(opt, value);
 }
 
-// set options
 bool rcp_typedefinition_set_option_i8(rcp_typedefinition* typedefinition, char prefix, int8_t value)
 {
     if (typedefinition == NULL) return false;
-	if (typedefinition->type_id != DATATYPE_INT8
-            && typedefinition->type_id != DATATYPE_UINT8) return false;
-
-	return _set_option_i8(&typedefinition->options, prefix, value);
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+	return rcp_option_set_i8(opt, value);
 }
 
 bool rcp_typedefinition_set_option_i16(rcp_typedefinition* typedefinition, char prefix, int16_t value)
 {
     if (typedefinition == NULL) return false;
-	if (typedefinition->type_id != DATATYPE_INT16
-            && typedefinition->type_id != DATATYPE_UINT16) return false;
-
-	return _set_option_i16(&typedefinition->options, prefix, value);
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+	return rcp_option_set_i16(opt, value);
 }
 
 bool rcp_typedefinition_set_option_i32(rcp_typedefinition* typedefinition, char prefix, int32_t value)
 {
-	if (typedefinition == NULL) return false;
-	if (typedefinition->type_id != DATATYPE_INT32
-            && typedefinition->type_id != DATATYPE_UINT32) return false;
-	
-	return _set_option_i32(&typedefinition->options, prefix, value);
+    if (typedefinition == NULL) return false;
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+	return rcp_option_set_i32(opt, value);
 }
 
 bool rcp_typedefinition_set_option_f32(rcp_typedefinition* typedefinition, char prefix, float value)
 {
-	if (typedefinition == NULL) return false;
-	if (typedefinition->type_id != DATATYPE_FLOAT32) return false;
-	
-	return _set_option_f32(&typedefinition->options, prefix, value);
+    if (typedefinition == NULL) return false;
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+	return rcp_option_set_f32(opt, value);
 }
 
+bool rcp_typedefinition_set_option_string_tiny(rcp_typedefinition* typedefinition, char prefix, const char* value)
+{
+    if (typedefinition == NULL) return false;
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+	return rcp_option_copy_string(opt, value, TINY_STRING);
+}
+
+bool rcp_typedefinition_set_option_stringlist(rcp_typedefinition* typedefinition, char prefix, int count, va_list args)
+{
+    if (typedefinition == NULL) return false;
+
+    rcp_option_put_stringlist(rcp_option_get_create(&typedefinition->options, prefix),
+                              rcp_stringlist_create_args(count, args));
+
+    return true;
+}
+
+
 // get options
+bool rcp_typedefinition_get_option_bool(rcp_typedefinition* typedefinition, char prefix, bool defaultValue)
+{
+    if (typedefinition != NULL)
+    {
+        rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
+        if (opt != NULL)
+        {
+            return rcp_option_get_bool(opt);
+        }
+    }
+
+    return defaultValue;
+}
+
 int8_t rcp_typedefinition_get_option_i8(rcp_typedefinition* typedefinition, char prefix, int8_t defaultValue)
 {
-    if (typedefinition != NULL
-            && (typedefinition->type_id == DATATYPE_INT8
-                || typedefinition->type_id == DATATYPE_UINT8))
+    if (typedefinition != NULL)
     {
         rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
         if (opt != NULL)
@@ -165,9 +174,7 @@ int8_t rcp_typedefinition_get_option_i8(rcp_typedefinition* typedefinition, char
 
 int16_t rcp_typedefinition_get_option_i16(rcp_typedefinition* typedefinition, char prefix, int16_t defaultValue)
 {
-    if (typedefinition != NULL
-            && (typedefinition->type_id == DATATYPE_INT16
-                || typedefinition->type_id == DATATYPE_UINT16))
+    if (typedefinition != NULL)
     {
         rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
         if (opt != NULL)
@@ -181,9 +188,7 @@ int16_t rcp_typedefinition_get_option_i16(rcp_typedefinition* typedefinition, ch
 
 int32_t rcp_typedefinition_get_option_i32(rcp_typedefinition* typedefinition, char prefix, int32_t defaultValue)
 {
-    if (typedefinition != NULL
-            && (typedefinition->type_id == DATATYPE_INT32
-                || typedefinition->type_id == DATATYPE_UINT32))
+    if (typedefinition != NULL)
     {
         rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
         if (opt != NULL)
@@ -197,8 +202,7 @@ int32_t rcp_typedefinition_get_option_i32(rcp_typedefinition* typedefinition, ch
 
 float rcp_typedefinition_get_option_f32(rcp_typedefinition* typedefinition, char prefix, float defaultValue)
 {
-    if (typedefinition != NULL
-            && typedefinition->type_id == DATATYPE_FLOAT32)
+    if (typedefinition != NULL)
     {
         rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
         if (opt != NULL)
@@ -208,6 +212,36 @@ float rcp_typedefinition_get_option_f32(rcp_typedefinition* typedefinition, char
     }
 
     return defaultValue;
+}
+
+// no transfer
+const char* rcp_typedefinition_get_option_string_tiny(rcp_typedefinition* typedefinition, char prefix)
+{
+    if (typedefinition != NULL)
+    {
+        rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
+        if (opt != NULL)
+        {
+            return rcp_option_get_string(opt, TINY_STRING);
+        }
+    }
+
+    return NULL;
+}
+
+// no transfer
+rcp_stringlist* rcp_typedefinition_get_option_stringlist(rcp_typedefinition* typedefinition, char prefix)
+{
+    if (typedefinition != NULL)
+    {
+        rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
+        if (opt != NULL)
+        {
+            return rcp_option_get_stringlist(opt);
+        }
+    }
+
+    return NULL;
 }
 
 
