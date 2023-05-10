@@ -151,8 +151,7 @@ void rcp_manager_log(rcp_manager* manager)
 #ifdef RCP_LOG_INFO
     if (manager == NULL) return;
 
-    RCP_INFO("- parameter_count: %d\n", manager->parameter_count);
-
+    RCP_INFO("---- parameters: (%d) ----\n", manager->parameter_count);
     rcp_parameter_list* pe = manager->parameters;
     while (pe)
     {
@@ -160,23 +159,24 @@ void rcp_manager_log(rcp_manager* manager)
         pe = pe->next;
     }
 
-    RCP_INFO("- dirty parameters -\n");
-
+    RCP_INFO("---- dirty parameters ----\n");
     pe = manager->dirty_parameters;
     while (pe)
     {
-        rcp_parameter_log(pe->parameter);
+        RCP_INFO("-- parameter id: %d\n", rcp_parameter_get_id(pe->parameter));
         pe = pe->next;
     }
+    RCP_INFO("\n");
 
-    RCP_INFO("- removed parameters -\n");
-
+    RCP_INFO("---- removed parameters ----\n");
     pe = manager->removed_parameters;
     while (pe)
     {
-        rcp_parameter_log(pe->parameter);
+        RCP_INFO("-- parameter id: %d\n", rcp_parameter_get_id(pe->parameter));
         pe = pe->next;
     }
+    RCP_INFO("\n");
+
 #endif
 }
 
