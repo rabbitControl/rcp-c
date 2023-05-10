@@ -460,25 +460,26 @@ size_t rcp_option_get_data_size(rcp_option* opt)
     return opt->data_size;
 }
 
-size_t rcp_option_write_value(rcp_option* opt, void* data)
+size_t rcp_option_write_value(rcp_option* opt, char* data, size_t size)
 {
     if (opt == NULL) return 0;
     if (data == NULL) return 0;
+    if (size == 0) return 0;
 
     // copy data    
     if (RCP_OPTION_IS_PTR(opt))
     {
         if (opt->data_type == RCP_TINY_STRING)
         {
-            return rcp_write_tiny_string(data, opt->data.str);
+            return rcp_write_tiny_string(data, size, opt->data.str);
         }
         else if (opt->data_type == RCP_SHORT_STRING)
         {
-            return rcp_write_short_string(data, opt->data.str);
+            return rcp_write_short_string(data, size, opt->data.str);
         }
         else if (opt->data_type == RCP_LONG_STRING)
         {
-            return rcp_write_long_string(data, opt->data.str);
+            return rcp_write_long_string(data, size, opt->data.str);
         }
         else if (opt->data_type == RCP_PTR)
         {
@@ -487,7 +488,7 @@ size_t rcp_option_write_value(rcp_option* opt, void* data)
 
             // write data
             memcpy((char*)data + RCP_OPTION_PTR_DATA_PREFIX_SIZE, opt->data.data, opt->data_size - RCP_OPTION_PTR_DATA_PREFIX_SIZE);
-        }
+        }        
         else
         {
 //            LANGUAGE_STRING
@@ -1321,6 +1322,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
     }
 
     data += 1;
+    size -= 1;
 
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
     if (opt->externalGetCb != NULL)
@@ -1334,15 +1336,15 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
         {
             if (opt->data_type == RCP_TINY_STRING)
             {
-                written += rcp_write_tiny_string(data, (char*)ext_data);
+                written += rcp_write_tiny_string(data, size, (char*)ext_data);
             }
             else if (opt->data_type == RCP_SHORT_STRING)
             {
-                written += rcp_write_short_string(data, (char*)ext_data);
+                written += rcp_write_short_string(data, size, (char*)ext_data);
             }
             else if (opt->data_type == RCP_LONG_STRING)
             {
-                written += rcp_write_long_string(data, (char*)ext_data);
+                written += rcp_write_long_string(data, size, (char*)ext_data);
             }
             else
             {
@@ -1359,19 +1361,19 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
 #endif
         if (opt->data_type == RCP_TINY_STRING)
         {
-            written += rcp_write_tiny_string(data, opt->data.str);
+            written += rcp_write_tiny_string(data, size, opt->data.str);
         }
         else if (opt->data_type == RCP_SHORT_STRING)
         {
-            written += rcp_write_short_string(data, opt->data.str);
+            written += rcp_write_short_string(data, size, opt->data.str);
         }
         else if (opt->data_type == RCP_LONG_STRING)
         {
-            written += rcp_write_long_string(data, opt->data.str);
+            written += rcp_write_long_string(data, size, opt->data.str);
         }
         else if (opt->data_type == RCP_LANGUAGE_STRING)
         {
-            size_t written_len = rcp_langstr_write(rcp_option_get_langstr(opt), data, size - written);
+            size_t written_len = rcp_langstr_write(rcp_option_get_langstr(opt), data, size);
             if (written_len == 0)
             {
                 return 0;
@@ -1380,7 +1382,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
         }
         else if (opt->data_type == RCP_INFO_DATA)
         {
-            size_t written_len = rcp_infodata_write(opt->data.info_data, data, size - written);
+            size_t written_len = rcp_infodata_write(opt->data.info_data, data, size);
             if (written_len == 0)
             {
                 return 0;
@@ -1389,7 +1391,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
         }
         else if (opt->data_type == RCP_PARAMETER_DATA)
         {
-            size_t written_len = rcp_parameter_write(opt->data.parameter_data, data, size - written, force);
+            size_t written_len = rcp_parameter_write(opt->data.parameter_data, data, size, force);
             if (written_len == 0)
             {
                 return false;
@@ -1398,7 +1400,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
         }
         else
         {
-            written += rcp_option_write_value(opt, data);
+            written += rcp_option_write_value(opt, data, size);
         }
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
     }

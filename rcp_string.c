@@ -215,15 +215,22 @@ char* rcp_read_long_string(char* data, size_t* size, char** target, uint32_t* st
 }
 
 
-size_t rcp_write_tiny_string(char* dst, const char* str)
+size_t rcp_write_tiny_string(char* dst, size_t size, const char* str)
 {
     if (dst == NULL) return 0;
+    if (size == 0) return 0;
 
     size_t str_len = str != NULL ? strlen(str) : 0;
 
     if (str_len > RCP_TINY_STRING_MAX_SIZE)
     {
         str_len = RCP_TINY_STRING_MAX_SIZE;
+    }
+
+    if (size < (str_len+TINY_STRING))
+    {
+        RCP_ERROR("write tiny string: insufficient memory\n")
+        return 0;
     }
 
     // write size
@@ -238,9 +245,10 @@ size_t rcp_write_tiny_string(char* dst, const char* str)
     return str_len + TINY_STRING;
 }
 
-size_t rcp_write_short_string(char* dst, const char* str)
+size_t rcp_write_short_string(char* dst, size_t size, const char* str)
 {
     if (dst == NULL) return 0;
+    if (size == 0) return 0;
 
     size_t str_len = str != NULL ? strlen(str) : 0;
 
@@ -249,6 +257,13 @@ size_t rcp_write_short_string(char* dst, const char* str)
         str_len = RCP_SHORT_STRING_MAX_SIZE;
     }
 
+    if (size < (str_len+SHORT_STRING))
+    {
+        RCP_ERROR("write short string: insufficient memory\n")
+        return 0;
+    }
+
+    // write size
     _rcp_store16(dst, (uint16_t)str_len);
 
     if (str_len > 0)
@@ -260,9 +275,10 @@ size_t rcp_write_short_string(char* dst, const char* str)
     return str_len + SHORT_STRING;
 }
 
-size_t rcp_write_long_string(char* dst, const char* str)
+size_t rcp_write_long_string(char* dst, size_t size, const char* str)
 {
     if (dst == NULL) return 0;
+    if (size == 0) return 0;
 
     RCP_DEBUG("write_long_string: %s\n", (str != NULL ? str : "null"));
 
@@ -273,6 +289,13 @@ size_t rcp_write_long_string(char* dst, const char* str)
         str_len = RCP_LONG_STRING_MAX_SIZE;
     }
 
+    if (size < (str_len+LONG_STRING))
+    {
+        RCP_ERROR("write long string: insufficient memory\n")
+        return 0;
+    }
+
+    // write size
     _rcp_store32(dst, (uint32_t)str_len);
 
     if (str_len > 0)

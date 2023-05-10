@@ -1994,11 +1994,12 @@ size_t rcp_parameter_write_updatevalue(rcp_parameter* parameter, char* dst, size
     if (written >= size) return 0;
     // move pointer
     dst += 1;
+    size -= written;
 
     if (rcp_parameter_is_value(parameter))
     {
         // write value
-        written += rcp_option_write_value(RCP_VALUE_PARAMETER(parameter)->value_option, dst);
+        written += rcp_option_write_value(RCP_VALUE_PARAMETER(parameter)->value_option, dst, size);
     }
 
     return written;

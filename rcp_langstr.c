@@ -267,13 +267,13 @@ size_t rcp_langstr_write(rcp_language_str* lng_str, char* data, size_t size)
         switch (lng_str->type)
         {
         case TINY_STRING:
-            written_len = rcp_write_tiny_string(data, lng_str->str);
+            written_len = rcp_write_tiny_string(data, (size - written), lng_str->str);
             break;
         case SHORT_STRING:
-            written_len = rcp_write_short_string(data, lng_str->str);
+            written_len = rcp_write_short_string(data, (size - written), lng_str->str);
             break;
         case LONG_STRING:
-            written_len = rcp_write_long_string(data, lng_str->str);
+            written_len = rcp_write_long_string(data, (size - written), lng_str->str);
             break;
         }
 

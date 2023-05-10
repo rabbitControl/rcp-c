@@ -99,7 +99,7 @@ size_t rcp_option_get_size(rcp_option* opt, bool force);
 // write option
 size_t rcp_option_write(rcp_option* opt, char* dst, size_t size, bool force);
 // write value into data, return size
-size_t rcp_option_write_value(rcp_option* opt, void* dst);
+size_t rcp_option_write_value(rcp_option* opt, char* dst, size_t size);
 // get size of data
 size_t rcp_option_get_data_size(rcp_option* opt);
 
