@@ -45,6 +45,7 @@ typedef enum rcp_option_data_type
     RCP_LANGUAGE_STRING,
     RCP_INFO_DATA,
     RCP_PARAMETER_DATA,
+    RCP_STRINGLIST,
 } rcp_option_data_type;
 
 typedef enum rcp_option_flags
@@ -69,6 +70,7 @@ union rcp_option_value
     double d;
     rcp_infodata* info_data;
     rcp_parameter* parameter_data;
+    rcp_stringlist* string_list;
     // widget data
 };
 
@@ -375,6 +377,10 @@ void rcp_option_free_data(rcp_option* opt)
                     RCP_FREE(opt->data.data);
                 }
             }
+            else if (opt->data_type == RCP_STRINGLIST)
+            {
+                rcp_stringlist_free(opt->data.string_list);
+            }
         }
 
         opt->data.data = NULL;
@@ -494,6 +500,7 @@ size_t rcp_option_write_value(rcp_option* opt, char* data, size_t size)
 //            LANGUAGE_STRING
 //            INFO_DATA
 //            PARAMETER_DATA
+//            STRINGLIST
 
             RCP_DEBUG("not handled!\n");
             return 0;
@@ -1171,6 +1178,23 @@ rcp_parameter* rcp_option_take_parameter(rcp_option* opt)
 }
 
 
+void rcp_option_put_stringlist(rcp_option* opt, rcp_stringlist* list)
+{
+    if (opt == NULL) return;
+    if (list == NULL) return;
+
+    rcp_option_free_data(opt);
+
+    if (list)
+    {
+        opt->data.string_list = list;
+        opt->data_type = RCP_STRINGLIST;
+        opt->data_size = rcp_stringlist_get_size(list);
+        opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
+        RCP_OPTION_SET_CHANGED(opt);
+    }
+}
+
 
 //
 void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
@@ -1239,6 +1263,10 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
         break;
     case RCP_PARAMETER_DATA:
         rcp_parameter_log(opt->data.parameter_data);
+        break;
+    case RCP_STRINGLIST:
+        RCP_INFO("\toption: 0x%02x - %s:\n", opt->prefix, prefix_str != NULL ? prefix_str : "");
+        rcp_stringlist_log(opt->data.string_list);
         break;
     case RCP_PTR:
     default:
@@ -1392,6 +1420,15 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
         else if (opt->data_type == RCP_PARAMETER_DATA)
         {
             size_t written_len = rcp_parameter_write(opt->data.parameter_data, data, size, force);
+            if (written_len == 0)
+            {
+                return false;
+            }
+            written += written_len;
+        }
+        else if (opt->data_type == RCP_STRINGLIST)
+        {
+            size_t written_len = rcp_stringlist_write(opt->data.string_list, data, size);
             if (written_len == 0)
             {
                 return false;

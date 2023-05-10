@@ -28,6 +28,7 @@ extern "C"{
 #include "rcp_parameter_type.h"
 #include "rcp_langstr.h"
 #include "rcp_infodata.h"
+#include "rcp_stringlist.h"
 
 
 // create / free
@@ -92,6 +93,8 @@ void rcp_option_set_parameter(rcp_option* opt, rcp_parameter* data); // no trans
 rcp_parameter* rcp_option_get_parameter(rcp_option* opt); // no transfer
 void rcp_option_put_parameter(rcp_option* opt, rcp_parameter* data); // full transfer
 rcp_parameter* rcp_option_take_parameter(rcp_option* opt); // full transfer
+
+void rcp_option_put_stringlist(rcp_option* opt, rcp_stringlist* list);
 
 // serializing
 // get size when serialized
