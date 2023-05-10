@@ -44,6 +44,7 @@ void rcp_server_set_id(rcp_server* server, const char* id); // copy id
 void rcp_server_add_transporter(rcp_server* server, rcp_server_transporter* transporter);
 void rcp_server_remove_transporter(rcp_server* server, rcp_server_transporter* transporter);
 
+// update server (removes parameters, sends dirty parmeter)
 void rcp_server_update(rcp_server* server);
 
 // expose parameter

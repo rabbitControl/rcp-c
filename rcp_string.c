@@ -220,6 +220,8 @@ size_t rcp_write_tiny_string(char* dst, size_t size, const char* str)
     if (dst == NULL) return 0;
     if (size == 0) return 0;
 
+    RCP_DEBUG("rcp_write_tiny_string: %s\n", (str != NULL ? str : "null"));
+
     size_t str_len = str != NULL ? strlen(str) : 0;
 
     if (str_len > RCP_TINY_STRING_MAX_SIZE)
@@ -249,6 +251,8 @@ size_t rcp_write_short_string(char* dst, size_t size, const char* str)
 {
     if (dst == NULL) return 0;
     if (size == 0) return 0;
+
+    RCP_DEBUG("rcp_write_short_string: %s\n", (str != NULL ? str : "null"));
 
     size_t str_len = str != NULL ? strlen(str) : 0;
 

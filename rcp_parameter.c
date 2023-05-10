@@ -591,6 +591,9 @@ static void _remove_from_parent(rcp_parameter* parameter)
     }
 }
 
+//-------------------
+// group parameter
+
 rcp_parameter_list* rcp_group_get_children(rcp_group_parameter* group)
 {
 	if (group == NULL) return NULL;

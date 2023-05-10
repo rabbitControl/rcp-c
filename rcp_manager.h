@@ -39,7 +39,7 @@ int16_t rcp_manager_get_available_id(rcp_manager* manager);
 void rcp_manager_clear(rcp_manager* manager); // clear all parameters
 
 // parameter
-bool rcp_manager_add_parameter(rcp_manager* manager, rcp_parameter* parameter, bool is_server);
+bool rcp_manager_add_parameter(rcp_manager* manager, rcp_parameter* parameter, bool is_server); // full transfer
 bool rcp_manager_update_parameter(rcp_manager* manager, rcp_parameter* parameter, bool is_server);
 rcp_parameter* rcp_manager_get_parameter(rcp_manager* manager, int16_t id);
 rcp_parameter_list* rcp_manager_get_paramter_list(rcp_manager* manager);

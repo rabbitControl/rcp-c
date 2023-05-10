@@ -379,15 +379,15 @@ char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, s
 }
 
 
-char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_string_options string_option)
+char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_string_options option)
 {
     if (typedefinition == NULL) return NULL;
 
-    RCP_DEBUG("parse_string_type_option: %d\n", string_option);
+    RCP_DEBUG("parse_string_type_option: %d\n", option);
 
     rcp_option* opt;
 
-    switch (string_option)
+    switch (option)
     {
     case STRING_OPTIONS_DEFAULT:
         opt = rcp_option_get_create(&typedefinition->options, STRING_OPTIONS_DEFAULT);
