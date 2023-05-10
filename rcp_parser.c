@@ -190,6 +190,8 @@ static rcp_parameter* _create_parameter_from_data(char** data, size_t* size)
                     return RCP_PARAMETER(rcp_f32_parameter_create(parameter_id));
                 case DATATYPE_STRING:
                     return RCP_PARAMETER(rcp_string_parameter_create(parameter_id));
+                case DATATYPE_ENUM:
+                    return RCP_PARAMETER(rcp_enum_parameter_create(parameter_id));
                 case DATATYPE_BANG:
                     return RCP_PARAMETER(rcp_bang_parameter_create(parameter_id));
                 case DATATYPE_GROUP:

@@ -21,6 +21,7 @@
 #include <string.h>
 #include <limits.h>
 #include <float.h>
+#include <stdarg.h>
 
 #include "rcp.h"
 #include "rcp_memory.h"
@@ -146,6 +147,11 @@ rcp_value_parameter* rcp_f32_parameter_create(int16_t id)
 rcp_value_parameter* rcp_string_parameter_create(int16_t id)
 {
     return _create_value_parameter(id, DATATYPE_STRING);
+}
+
+rcp_value_parameter* rcp_enum_parameter_create(int16_t id)
+{
+    return _create_value_parameter(id, DATATYPE_ENUM);
 }
 
 rcp_bang_parameter* rcp_bang_parameter_create(int16_t id)
@@ -1281,6 +1287,133 @@ const char* rcp_parameter_get_value_string(rcp_value_parameter* parameter)
     return rcp_option_get_string(parameter->value_option, LONG_STRING);
 }
 
+//-------------------
+// enum parameter
+void rcp_parameter_set_value_enum(rcp_value_parameter* parameter, const char* value)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of corrent type
+    if (validate_value_parameter(parameter, DATATYPE_ENUM, DATATYPE_INVALID))
+    {
+        if (rcp_option_copy_string(parameter->value_option, value, TINY_STRING))
+        {
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+    else
+    {
+        // error!
+        RCP_PARAMETER_DEBUG("parameter not of type enum");
+    }
+}
+
+void rcp_parameter_set_default_enum(rcp_value_parameter* parameter, const char* value)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of corrent type
+    if (RCP_IS_TYPE(parameter, DATATYPE_ENUM))
+	{
+        if (rcp_typedefinition_set_option_string_tiny(RCP_PARAMETER(parameter)->typedefinition, ENUM_OPTIONS_DEFAULT, value))
+		{
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+    else
+    {
+        // error!
+        RCP_PARAMETER_DEBUG("parameter not of type enum");
+    }
+}
+void rcp_parameter_set_multiselect_enum(rcp_value_parameter* parameter, bool value)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of corrent type
+    if (RCP_IS_TYPE(parameter, DATATYPE_ENUM))
+	{
+        if (rcp_typedefinition_set_option_bool(RCP_PARAMETER(parameter)->typedefinition, ENUM_OPTIONS_MULTISELECT, value))
+		{
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+    else
+    {
+        // error!
+        RCP_PARAMETER_DEBUG("parameter not of type enum");
+    }
+}
+
+void rcp_parameter_set_entries_enum(rcp_value_parameter* parameter, int count, ...)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of corrent type
+    if (RCP_IS_TYPE(parameter, DATATYPE_ENUM))
+	{
+        va_list valist;
+        va_start(valist, count);
+        if (rcp_typedefinition_set_option_stringlist(RCP_PARAMETER(parameter)->typedefinition, ENUM_OPTIONS_ENTRIES, count, valist))
+		{
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+        va_end(valist);
+    }
+    else
+    {
+        // error!
+        RCP_PARAMETER_DEBUG("parameter not of type enum");
+    }
+}
+
+const char* rcp_parameter_get_value_enum(rcp_value_parameter* parameter)
+{
+    if (parameter == NULL) return NULL;
+
+    // check if parameter is of corrent type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_ENUM)
+    {
+        // error
+        RCP_ERROR("value parameter of wrong type!\n");
+        return NULL;
+    }
+
+    return rcp_option_get_string(parameter->value_option, TINY_STRING);
+}
+
+const char* rcp_parameter_get_default_enum(rcp_value_parameter* parameter)
+{
+    if (parameter == NULL) return NULL;
+
+    // check if parameter is of corrent type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_ENUM)
+    {
+        // error
+        RCP_ERROR("value parameter of wrong type!\n");
+        return NULL;
+    }
+
+    return rcp_typedefinition_get_option_string_tiny(RCP_PARAMETER(parameter)->typedefinition, ENUM_OPTIONS_DEFAULT);
+}
+
+bool rcp_parameter_get_multiselect_enum(rcp_value_parameter* parameter)
+{
+    if (parameter == NULL) return NULL;
+
+    // check if parameter is of corrent type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_ENUM)
+    {
+        // error
+        RCP_ERROR("value parameter of wrong type!\n");
+        return NULL;
+    }
+
+    return rcp_typedefinition_get_option_bool(RCP_PARAMETER(parameter)->typedefinition, ENUM_OPTIONS_MULTISELECT, false);
+}
+
+
+
 //------------------------
 //
 size_t rcp_parameter_get_value_size(rcp_value_parameter* parameter)
@@ -1355,6 +1488,7 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
         }
 
         case DATATYPE_STRING:
+        case DATATYPE_ENUM:
         {
             data = rcp_typedefinition_parse_string_value(parameter->typedefinition, data, size, opt);
             if (data == NULL) return NULL;
@@ -1364,7 +1498,6 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
         }
 
         case DATATYPE_RGB:
-//        case DATATYPE_ENUM:
 //        case DATATYPE_RANGE:
         default:
             RCP_DEBUG("datatype not implements\n");
@@ -1743,6 +1876,10 @@ void rcp_parameter_log(rcp_parameter* parameter)
 
                 case DATATYPE_STRING:
                     RCP_INFO_ONLY("%s\n", rcp_option_get_string(opt, LONG_STRING));
+                    break;
+
+                case DATATYPE_ENUM:
+                    RCP_INFO_ONLY("%s\n", rcp_option_get_string(opt, TINY_STRING));
                     break;
 
                 default:

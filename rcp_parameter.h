@@ -48,6 +48,7 @@ rcp_value_parameter* rcp_i32_parameter_create(int16_t id);
 rcp_value_parameter* rcp_u32_parameter_create(int16_t id);
 rcp_value_parameter* rcp_f32_parameter_create(int16_t id);
 rcp_value_parameter* rcp_string_parameter_create(int16_t id);
+rcp_value_parameter* rcp_enum_parameter_create(int16_t id);
 rcp_bang_parameter* rcp_bang_parameter_create(int16_t id);
 
 // free
@@ -160,6 +161,16 @@ void rcp_bang_parameter_set_dirty(rcp_bang_parameter* parameter);
 //-------------------
 // group parameter
 rcp_parameter_list* rcp_group_get_children(rcp_group_parameter* group);
+
+//-------------------
+// enum parameter
+void rcp_parameter_set_value_enum(rcp_value_parameter* param, const char* value);
+void rcp_parameter_set_default_enum(rcp_value_parameter* param, const char* value);
+void rcp_parameter_set_multiselect_enum(rcp_value_parameter* param, bool value);
+void rcp_parameter_set_entries_enum(rcp_value_parameter* param, int count, ...); // options as const char*
+const char* rcp_parameter_get_value_enum(rcp_value_parameter* param);
+const char* rcp_parameter_get_default_enum(rcp_value_parameter* param);
+bool rcp_parameter_get_multiselect_enum(rcp_value_parameter* param);
 
 
 //-------------------

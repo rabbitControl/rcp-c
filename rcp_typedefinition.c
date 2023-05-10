@@ -259,6 +259,7 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
         break;
 
     case DATATYPE_BOOLEAN:
+    case DATATYPE_ENUM:
     {
         rcp_option_free_data(opt);
         int8_t val;
@@ -361,9 +362,64 @@ char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, 
         rcp_option_move_string(opt, string_value, LONG_STRING);
         return data;
     }
+    else if (typedefinition->type_id == DATATYPE_ENUM)
+    {
+        rcp_option_free_data(opt);
+        char* string_value = NULL;
+        uint8_t str_len = 0;
+        data = rcp_read_tiny_string(data, size, &string_value, &str_len);
+        if (data == NULL) return NULL;
+
+        rcp_option_move_string(opt, string_value, TINY_STRING);
+        return data;
+    }
 
     RCP_DEBUG("wrong type: did not read value!");
     return NULL;
+}
+
+static char* rcp_typedefinition_parse_stringlist_value(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_option* opt)
+{
+    if (typedefinition == NULL) return data;
+
+    RCP_DEBUG("parse_stringlist_value: %d\n", typedefinition->type_id);
+
+    // INFO: we know it is a enum-type...
+
+    rcp_option_free_data(opt);
+
+    char* string_value = NULL;
+    int count = 0;
+
+    rcp_stringlist* list = rcp_stringlist_create(0);
+
+    do
+    {
+        uint8_t str_len = 0;
+        data = rcp_read_tiny_string(data, size, &string_value, &str_len);
+
+        if (string_value != NULL)
+        {
+            count++;
+
+            // append_put string
+            rcp_stringlist_append_put(list, string_value);
+        }
+
+        if (data == NULL) return NULL;
+
+    } while (string_value != NULL);
+
+    if (count > 0)
+    {
+        rcp_option_put_stringlist(opt, list);
+    }
+    else
+    {
+        rcp_stringlist_free(list);
+    }
+
+    return data;
 }
 
 
@@ -430,6 +486,38 @@ char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, s
     case STRING_OPTIONS_REGULAR_EXPRESSION:
         opt = rcp_option_get_create(&typedefinition->options, STRING_OPTIONS_REGULAR_EXPRESSION);
         return rcp_typedefinition_parse_string_value(typedefinition, data, size, opt);
+    }
+
+    return 0;
+}
+
+char* parse_enum_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_enum_options option)
+{
+    if (typedefinition == NULL) return NULL;
+
+    RCP_DEBUG("parse_string_type_option: %d\n", option);
+
+    rcp_option* opt;
+
+    switch (option)
+    {
+    case ENUM_OPTIONS_DEFAULT:
+        opt = rcp_option_get_create(&typedefinition->options, ENUM_OPTIONS_DEFAULT);
+        return rcp_typedefinition_parse_string_value(typedefinition, data, size, opt);
+
+    case ENUM_OPTIONS_MULTISELECT:
+        opt = rcp_option_get_create(&typedefinition->options, ENUM_OPTIONS_MULTISELECT);
+        return rcp_typedefinition_parse_number_value(typedefinition, data, size, opt);
+
+    case ENUM_OPTIONS_ENTRIES:
+        if (*data == RCP_TERMINATOR)
+        {
+            // skip if there are no entries
+            *size -= 1;
+            return data + 1;
+        }
+        opt = rcp_option_get_create(&typedefinition->options, ENUM_OPTIONS_ENTRIES);
+        return rcp_typedefinition_parse_stringlist_value(typedefinition, data, size, opt);
     }
 
     return 0;
@@ -514,6 +602,11 @@ char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, 
         case DATATYPE_STRING:
             data = parse_string_type_option(typedefinition, data, size, option_prefix);
             break;
+
+        case DATATYPE_ENUM:
+            data = parse_enum_type_option(typedefinition, data, size, option_prefix);
+            break;
+
 
         case DATATYPE_BANG:
         case DATATYPE_GROUP:
@@ -788,6 +881,21 @@ void rcp_typedefinition_log(rcp_typedefinition* typedefinition)
 
             case DATATYPE_STRING:
                 RCP_INFO("\toption: 0x%02x - %s\n", rcp_option_get_prefix(opt), rcp_option_get_string(opt, LONG_STRING));
+                break;
+
+            case DATATYPE_ENUM:
+                switch((rcp_enum_options)rcp_option_get_prefix(opt))
+                {
+                case ENUM_OPTIONS_DEFAULT:
+                    rcp_option_log(opt, "DEFAULT", false);
+                    break;
+                case ENUM_OPTIONS_MULTISELECT:
+                    rcp_option_log(opt, "MULTISELECT", false);
+                    break;
+                case ENUM_OPTIONS_ENTRIES:
+                    rcp_option_log(opt, "ENTRIES", false);
+                    break;
+                }
                 break;
 
             case DATATYPE_GROUP:

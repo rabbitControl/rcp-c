@@ -64,6 +64,7 @@ typedef enum rcp_command_t rcp_packet_command;
 typedef enum rcp_packet_options_t rcp_packet_options;
 typedef enum rcp_infodata_options_t rcp_infodata_options;
 typedef enum rcp_string_types_t rcp_string_types;
+typedef enum rcp_enum_options_t rcp_enum_options;
 
 #ifdef __cplusplus
 } // extern "C"
