@@ -571,7 +571,7 @@ size_t rcp_packet_write(rcp_packet* packet, char** dst, bool all)
     // check for potential memory leak
     if (*dst != NULL)
     {
-        RCP_DEBUG("potential memory leak - *dst != NULL");
+        RCP_DEBUG("potential memory leak - *dst != NULL\n");
     }
 
 
