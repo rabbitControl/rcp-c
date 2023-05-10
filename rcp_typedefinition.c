@@ -296,6 +296,7 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
 
     case DATATYPE_INT32:
     case DATATYPE_UINT32:
+    case DATATYPE_RGB:
     {
         rcp_option_free_data(opt);
         int32_t val;

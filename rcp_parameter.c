@@ -1479,6 +1479,7 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
         case DATATYPE_UINT64:
         case DATATYPE_FLOAT32:
         case DATATYPE_FLOAT64:
+        case DATATYPE_RGB:
         {
             data = rcp_typedefinition_parse_number_value(parameter->typedefinition, data, size, opt);
             if (data == NULL) return NULL;
@@ -1497,7 +1498,6 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
             break;
         }
 
-        case DATATYPE_RGB:
 //        case DATATYPE_RANGE:
         default:
             RCP_DEBUG("datatype not implements\n");
@@ -1833,7 +1833,7 @@ void rcp_parameter_log(rcp_parameter* parameter)
         while (opt)
         {
             RCP_INFO("\toption: 0x%02x - ", rcp_option_get_prefix(opt));
-            RCP_INFO("\t\tchanged: %d - ", rcp_option_is_changed(opt));
+            RCP_INFO_ONLY("changed: %d - ", rcp_option_is_changed(opt));
 
             switch ((rcp_parameter_options)rcp_option_get_prefix(opt))
             {
