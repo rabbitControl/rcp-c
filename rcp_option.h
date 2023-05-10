@@ -94,7 +94,8 @@ rcp_parameter* rcp_option_get_parameter(rcp_option* opt); // no transfer
 void rcp_option_put_parameter(rcp_option* opt, rcp_parameter* data); // full transfer
 rcp_parameter* rcp_option_take_parameter(rcp_option* opt); // full transfer
 
-void rcp_option_put_stringlist(rcp_option* opt, rcp_stringlist* list);
+void rcp_option_put_stringlist(rcp_option* opt, rcp_stringlist* list); // full transfer
+rcp_stringlist* rcp_option_get_stringlist(rcp_option* opt); // no transfer
 
 // serializing
 // get size when serialized

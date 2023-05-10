@@ -1195,6 +1195,15 @@ void rcp_option_put_stringlist(rcp_option* opt, rcp_stringlist* list)
     }
 }
 
+// no transfer
+rcp_stringlist* rcp_option_get_stringlist(rcp_option* opt)
+{
+    if (opt == NULL) return NULL;
+    if (opt->data_type != RCP_STRINGLIST) return NULL;
+
+    return opt->data.string_list;
+}
+
 
 //
 void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
