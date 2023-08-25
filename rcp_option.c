@@ -497,6 +497,8 @@ size_t rcp_option_write_value(rcp_option* opt, char* data, size_t size)
         }        
         else
         {
+            // these are not values for parameters - ignore
+            // NOTE: an option can write these:
 //            LANGUAGE_STRING
 //            INFO_DATA
 //            PARAMETER_DATA
@@ -1396,19 +1398,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
     else
     {
 #endif
-        if (opt->data_type == RCP_TINY_STRING)
-        {
-            written += rcp_write_tiny_string(data, size, opt->data.str);
-        }
-        else if (opt->data_type == RCP_SHORT_STRING)
-        {
-            written += rcp_write_short_string(data, size, opt->data.str);
-        }
-        else if (opt->data_type == RCP_LONG_STRING)
-        {
-            written += rcp_write_long_string(data, size, opt->data.str);
-        }
-        else if (opt->data_type == RCP_LANGUAGE_STRING)
+        if (opt->data_type == RCP_LANGUAGE_STRING)
         {
             size_t written_len = rcp_langstr_write(rcp_option_get_langstr(opt), data, size);
             if (written_len == 0)
@@ -1431,7 +1421,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
             size_t written_len = rcp_parameter_write(opt->data.parameter_data, data, size, force);
             if (written_len == 0)
             {
-                return false;
+                return 0;
             }
             written += written_len;
         }
@@ -1440,18 +1430,22 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
             size_t written_len = rcp_stringlist_write(opt->data.string_list, data, size);
             if (written_len == 0)
             {
-                return false;
+                return 0;
             }
             written += written_len;
         }
         else
         {
-            written += rcp_option_write_value(opt, data, size);
+            size_t written_len = rcp_option_write_value(opt, data, size);
+            if (written_len == 0)
+            {
+                return 0;
+            }
+            written += written_len;
         }
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
     }
 #endif
-
 
     RCP_OPTION_UNSET_CHANGED(opt);
 
