@@ -1095,6 +1095,38 @@ static void _set_typdefinition_option_int8(rcp_value_parameter* parameter, char 
     }
 }
 
+void rcp_parameter_set_number_scale(rcp_value_parameter* parameter, rcp_number_scale scale)
+{
+    if (rcp_parameter_is_number(RCP_PARAMETER(parameter)))
+	{
+        _set_typdefinition_option_int8(parameter, NUMBER_OPTIONS_SCALE, scale);
+    }
+    else
+    {
+        // error!
+        RCP_PARAMETER_DEBUG("parameter not a number-type");
+    }
+}
+
+void rcp_parameter_set_number_unit(rcp_value_parameter* parameter, const char* unit)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of correct type
+    if (rcp_parameter_is_number(RCP_PARAMETER(parameter)))
+	{
+        if (rcp_typedefinition_set_option_string_tiny(RCP_PARAMETER(parameter)->typedefinition, NUMBER_OPTIONS_UNIT, unit))
+        {
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+    else
+    {
+        // error!
+        RCP_PARAMETER_DEBUG("parameter not a number-type");
+    }
+}
+
 void rcp_parameter_set_default_int8(rcp_value_parameter* parameter, int8_t value)
 {
     _set_typdefinition_option_int8(parameter, NUMBER_OPTIONS_DEFAULT, value);
@@ -2197,9 +2229,23 @@ bool rcp_parameter_is_value(rcp_parameter* param)
     return  false;
 }
 
-bool rcp_parameter_is_group(rcp_parameter* param)
+bool rcp_parameter_is_group(rcp_parameter* parameter)
 {
-	return RCP_IS_GROUP(param);
+	return RCP_IS_GROUP(parameter);
+}
+
+bool rcp_parameter_is_number(rcp_parameter* parameter)
+{
+    return RCP_IS_TYPE(parameter, DATATYPE_INT8) ||
+            RCP_IS_TYPE(parameter, DATATYPE_UINT8) ||
+            RCP_IS_TYPE(parameter, DATATYPE_INT16) ||
+            RCP_IS_TYPE(parameter, DATATYPE_UINT16) ||
+            RCP_IS_TYPE(parameter, DATATYPE_INT32) ||
+            RCP_IS_TYPE(parameter, DATATYPE_UINT32) ||
+            RCP_IS_TYPE(parameter, DATATYPE_INT64) ||
+            RCP_IS_TYPE(parameter, DATATYPE_UINT64) ||
+            RCP_IS_TYPE(parameter, DATATYPE_FLOAT32) ||
+            RCP_IS_TYPE(parameter, DATATYPE_FLOAT64);
 }
 
 bool rcp_parameter_only_value_changed(rcp_parameter* parameter)

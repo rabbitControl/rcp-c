@@ -58,6 +58,7 @@ extern "C"{
 
 typedef enum rcp_datatype_t rcp_datatype;
 typedef enum rcp_number_options_t rcp_number_options;
+typedef enum rcp_number_scale_t rcp_number_scale;
 typedef enum rcp_string_options_t rcp_string_options;
 typedef enum rcp_parameter_options_t rcp_parameter_options;
 typedef enum rcp_command_t rcp_packet_command;

@@ -73,8 +73,9 @@ bool rcp_parameter_has_option(rcp_parameter* parameter, rcp_parameter_options op
 
 // parameter types
 bool rcp_parameter_is_type(rcp_parameter* parameter, rcp_datatype type);
-bool rcp_parameter_is_value(rcp_parameter* param);
-bool rcp_parameter_is_group(rcp_parameter* param);
+bool rcp_parameter_is_value(rcp_parameter* parameter);
+bool rcp_parameter_is_group(rcp_parameter* parameter);
+bool rcp_parameter_is_number(rcp_parameter* parameter);
 
 //-------------------
 // value parameter
@@ -83,6 +84,10 @@ bool rcp_parameter_only_value_changed(rcp_parameter* parameter);
 // bool
 void rcp_parameter_set_value_bool(rcp_value_parameter* param, bool value);
 bool rcp_parameter_get_value_bool(rcp_value_parameter* param);
+
+// number
+void rcp_parameter_set_number_scale(rcp_value_parameter* parameter, rcp_number_scale scale);
+void rcp_parameter_set_number_unit(rcp_value_parameter* parameter, const char* unit);
 
 // int8
 void rcp_parameter_set_value_int8(rcp_value_parameter* param, int8_t value);
