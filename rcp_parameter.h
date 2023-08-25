@@ -85,56 +85,56 @@ bool rcp_parameter_is_number(rcp_parameter* parameter);
 bool rcp_parameter_only_value_changed(rcp_parameter* parameter);
 
 // bool
-void rcp_parameter_set_value_bool(rcp_value_parameter* param, bool value);
-bool rcp_parameter_get_value_bool(rcp_value_parameter* param);
+void rcp_parameter_set_value_bool(rcp_value_parameter* parameter, bool value);
+bool rcp_parameter_get_value_bool(rcp_value_parameter* parameter);
 
 // number
 void rcp_parameter_set_number_scale(rcp_value_parameter* parameter, rcp_number_scale scale);
 void rcp_parameter_set_number_unit(rcp_value_parameter* parameter, const char* unit);
 
 // int8
-void rcp_parameter_set_value_int8(rcp_value_parameter* param, int8_t value);
+void rcp_parameter_set_value_int8(rcp_value_parameter* parameter, int8_t value);
 void rcp_parameter_set_default_int8(rcp_value_parameter* parameter, int8_t value);
 void rcp_parameter_set_min_int8(rcp_value_parameter* parameter, int8_t value);
 void rcp_parameter_set_max_int8(rcp_value_parameter* parameter, int8_t value);
 void rcp_parameter_set_multipleof_int8(rcp_value_parameter* parameter, int8_t value);
-int8_t rcp_parameter_get_value_int8(rcp_value_parameter* param);
+int8_t rcp_parameter_get_value_int8(rcp_value_parameter* parameter);
 
 // int16
-void rcp_parameter_set_value_int16(rcp_value_parameter* param, int16_t value);
+void rcp_parameter_set_value_int16(rcp_value_parameter* parameter, int16_t value);
 void rcp_parameter_set_default_int16(rcp_value_parameter* parameter, int16_t value);
 void rcp_parameter_set_min_int16(rcp_value_parameter* parameter, int16_t value);
 void rcp_parameter_set_max_int16(rcp_value_parameter* parameter, int16_t value);
 void rcp_parameter_set_multipleof_int16(rcp_value_parameter* parameter, int16_t value);
-int16_t rcp_parameter_get_value_int16(rcp_value_parameter* param);
+int16_t rcp_parameter_get_value_int16(rcp_value_parameter* parameter);
 
 // int32
-void rcp_parameter_set_value_int32(rcp_value_parameter* param, int32_t value);
+void rcp_parameter_set_value_int32(rcp_value_parameter* parameter, int32_t value);
 void rcp_parameter_set_default_int32(rcp_value_parameter* parameter, int32_t value);
 void rcp_parameter_set_min_int32(rcp_value_parameter* parameter, int32_t value);
 void rcp_parameter_set_max_int32(rcp_value_parameter* parameter, int32_t value);
 void rcp_parameter_set_multipleof_int32(rcp_value_parameter* parameter, int32_t value);
-int32_t rcp_parameter_get_value_int32(rcp_value_parameter* param);
+int32_t rcp_parameter_get_value_int32(rcp_value_parameter* parameter);
 int32_t rcp_parameter_get_default_int32(rcp_value_parameter* parameter);
 int32_t rcp_parameter_get_min_int32(rcp_value_parameter* parameter);
 int32_t rcp_parameter_get_max_int32(rcp_value_parameter* parameter);
 int32_t rcp_parameter_get_multipleof_int32(rcp_value_parameter* parameter);
 
 // float
-void rcp_parameter_set_value_float(rcp_value_parameter* param, float value);
+void rcp_parameter_set_value_float(rcp_value_parameter* parameter, float value);
 void rcp_parameter_set_default_float(rcp_value_parameter* parameter, float value);
 void rcp_parameter_set_min_float(rcp_value_parameter* parameter, float value);
 void rcp_parameter_set_max_float(rcp_value_parameter* parameter, float value);
 void rcp_parameter_set_multipleof_float(rcp_value_parameter* parameter, float value);
-float rcp_parameter_get_value_float(rcp_value_parameter* param);
+float rcp_parameter_get_value_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_default_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_min_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_max_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_multipleof_float(rcp_value_parameter* parameter);
 
 // string
-void rcp_parameter_set_value_string(rcp_value_parameter* param, const char* value);
-const char* rcp_parameter_get_value_string(rcp_value_parameter* param);
+void rcp_parameter_set_value_string(rcp_value_parameter* parameter, const char* value);
+const char* rcp_parameter_get_value_string(rcp_value_parameter* parameter);
 
 
 // unsigned
@@ -162,8 +162,8 @@ const char* rcp_parameter_get_value_string(rcp_value_parameter* param);
 
 //-------------------
 // bang parameter
-void rcp_bang_parameter_set_bang_cb(rcp_bang_parameter* param, void (*fn)(rcp_bang_parameter* parameter, void* user));
-void rcp_bang_parameter_call_bang_cb(rcp_bang_parameter* param);
+void rcp_bang_parameter_set_bang_cb(rcp_bang_parameter* parameter, void (*fn)(rcp_bang_parameter* parameter, void* user));
+void rcp_bang_parameter_call_bang_cb(rcp_bang_parameter* parameter);
 void rcp_bang_parameter_set_dirty(rcp_bang_parameter* parameter);
 
 //-------------------
@@ -172,13 +172,13 @@ rcp_parameter_list* rcp_group_get_children(rcp_group_parameter* group);
 
 //-------------------
 // enum parameter
-void rcp_parameter_set_value_enum(rcp_value_parameter* param, const char* value);
-void rcp_parameter_set_default_enum(rcp_value_parameter* param, const char* value);
-void rcp_parameter_set_multiselect_enum(rcp_value_parameter* param, bool value);
-void rcp_parameter_set_entries_enum(rcp_value_parameter* param, int count, ...); // options as const char*
-const char* rcp_parameter_get_value_enum(rcp_value_parameter* param);
-const char* rcp_parameter_get_default_enum(rcp_value_parameter* param);
-bool rcp_parameter_get_multiselect_enum(rcp_value_parameter* param);
+void rcp_parameter_set_value_enum(rcp_value_parameter* parameter, const char* value);
+void rcp_parameter_set_default_enum(rcp_value_parameter* parameter, const char* value);
+void rcp_parameter_set_multiselect_enum(rcp_value_parameter* parameter, bool value);
+void rcp_parameter_set_entries_enum(rcp_value_parameter* parameter, int count, ...); // options as const char*
+const char* rcp_parameter_get_value_enum(rcp_value_parameter* parameter);
+const char* rcp_parameter_get_default_enum(rcp_value_parameter* parameter);
+bool rcp_parameter_get_multiselect_enum(rcp_value_parameter* parameter);
 
 
 //-------------------
@@ -227,9 +227,9 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* dst, size_t size, boo
 size_t rcp_parameter_write_updatevalue(rcp_parameter* parameter, char* dst, size_t size);
 
 // callbacks
-void rcp_parameter_set_user(rcp_parameter* param, void* user);
-void rcp_parameter_set_updated_cb(rcp_parameter* param, void (*cb)(rcp_parameter*, void*));
-void rcp_parameter_set_value_updated_cb(rcp_value_parameter* param, void (*cb)(rcp_value_parameter*, void*));
+void rcp_parameter_set_user(rcp_parameter* parameter, void* user);
+void rcp_parameter_set_updated_cb(rcp_parameter* parameter, void (*cb)(rcp_parameter*, void*));
+void rcp_parameter_set_value_updated_cb(rcp_value_parameter* parameter, void (*cb)(rcp_value_parameter*, void*));
 
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
 // external data

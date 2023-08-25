@@ -273,27 +273,27 @@ bool rcp_parameter_has_options(rcp_parameter* parameter)
     return false;
 }
 
-void rcp_parameter_set_user(rcp_parameter* param, void* user)
+void rcp_parameter_set_user(rcp_parameter* parameter, void* user)
 {
-	if (param != NULL)
+	if (parameter != NULL)
     {
-        param->user = user;
+        parameter->user = user;
     }
 }
 
-void rcp_parameter_set_updated_cb(rcp_parameter* param, void (*cb)(rcp_parameter*, void*))
+void rcp_parameter_set_updated_cb(rcp_parameter* parameter, void (*cb)(rcp_parameter*, void*))
 {
-    if (param != NULL)
+    if (parameter != NULL)
     {
-        param->optionUpdatedCb = cb;
+        parameter->optionUpdatedCb = cb;
     }
 }
 
-void rcp_parameter_set_value_updated_cb(rcp_value_parameter* param, void (*cb)(rcp_value_parameter*, void*))
+void rcp_parameter_set_value_updated_cb(rcp_value_parameter* parameter, void (*cb)(rcp_value_parameter*, void*))
 {
-    if (param != NULL)
+    if (parameter != NULL)
     {
-        param->valueUpdatedCb = cb;
+        parameter->valueUpdatedCb = cb;
     }
 }
 
@@ -444,19 +444,19 @@ bool rcp_parameter_has_option(rcp_parameter* parameter, rcp_parameter_options op
 }
 
 
-void rcp_bang_parameter_set_bang_cb(rcp_bang_parameter* param, void (*fn)(rcp_bang_parameter* parameter, void* user))
+void rcp_bang_parameter_set_bang_cb(rcp_bang_parameter* parameter, void (*fn)(rcp_bang_parameter* parameter, void* user))
 {
-    if (param == NULL) return;
+    if (parameter == NULL) return;
 
-    param->bangCb = fn;
+    parameter->bangCb = fn;
 }
 
-void rcp_bang_parameter_call_bang_cb(rcp_bang_parameter* param)
+void rcp_bang_parameter_call_bang_cb(rcp_bang_parameter* parameter)
 {
-    if (param == NULL) return;
-    if (param->bangCb == NULL) return;
+    if (parameter == NULL) return;
+    if (parameter->bangCb == NULL) return;
 
-    param->bangCb(param, param->parameter_base.user);
+    parameter->bangCb(parameter, parameter->parameter_base.user);
 }
 
 void rcp_bang_parameter_set_dirty(rcp_bang_parameter* parameter)
@@ -907,25 +907,25 @@ bool rcp_parameter_get_readonly(rcp_parameter* parameter)
  *
  */
 
-static bool validate_value_parameter(rcp_value_parameter* param, rcp_datatype type, rcp_datatype type2)
+static bool validate_value_parameter(rcp_value_parameter* parameter, rcp_datatype type, rcp_datatype type2)
 {
-    if (param == NULL) return false;
+    if (parameter == NULL) return false;
 
-    // check if parameter is of corrent type
-    if (RCP_TYPE_ID(RCP_PARAMETER(param)) != type
-            && RCP_TYPE_ID(RCP_PARAMETER(param)) != type2)
+    // check if parameter is of correct type
+    if (RCP_TYPE_ID(RCP_PARAMETER(parameter)) != type
+            && RCP_TYPE_ID(RCP_PARAMETER(parameter)) != type2)
     {
         // error
-        RCP_ERROR("value parameter of wrong type! %d != %d\n", RCP_TYPE_ID(RCP_PARAMETER(param)), type);
+        RCP_ERROR("value parameter of wrong type! %d != %d\n", RCP_TYPE_ID(RCP_PARAMETER(parameter)), type);
         return false;
     }
 	
-    if (param->value_option == NULL)
+    if (parameter->value_option == NULL)
     {
-		param->value_option = rcp_option_get_create(&param->parameter_base.options, PARAMETER_OPTIONS_VALUE);
+		parameter->value_option = rcp_option_get_create(&parameter->parameter_base.options, PARAMETER_OPTIONS_VALUE);
 	}
 
-	if (param->value_option == NULL)
+	if (parameter->value_option == NULL)
     {
 		// !! error!
 		return false;
@@ -954,19 +954,19 @@ void rcp_parameter_set_value_bool(rcp_value_parameter* parameter, bool value)
     }
 }
 
-bool rcp_parameter_get_value_bool(rcp_value_parameter* param)
+bool rcp_parameter_get_value_bool(rcp_value_parameter* parameter)
 {
-    if (param == NULL) return 0;
+    if (parameter == NULL) return 0;
 
-    // check if parameter is of corrent type
-    if (rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_BOOLEAN)
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_BOOLEAN)
     {
         // error
         RCP_ERROR("value parameter of wrong type!\n");
         return false;
     }
 
-    return rcp_option_get_bool(param->value_option);
+    return rcp_option_get_bool(parameter->value_option);
 }
 
 //------------------------
@@ -985,20 +985,20 @@ void rcp_parameter_set_value_int8(rcp_value_parameter* parameter, int8_t value)
     }
 }
 
-int8_t rcp_parameter_get_value_int8(rcp_value_parameter* param)
+int8_t rcp_parameter_get_value_int8(rcp_value_parameter* parameter)
 {
-    if (param == NULL) return 0;
+    if (parameter == NULL) return 0;
 
-    // check if parameter is of corrent type
-    if (rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_INT8
-            && rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_UINT8)
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_INT8
+            && rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_UINT8)
     {
         // error
         RCP_ERROR("value parameter of wrong type!\n");
         return 0;
     }
 
-    return rcp_option_get_i8(param->value_option);
+    return rcp_option_get_i8(parameter->value_option);
 }
 
 //------------------------
@@ -1017,20 +1017,20 @@ void rcp_parameter_set_value_int16(rcp_value_parameter* parameter, int16_t value
     }
 }
 
-int16_t rcp_parameter_get_value_int16(rcp_value_parameter* param)
+int16_t rcp_parameter_get_value_int16(rcp_value_parameter* parameter)
 {
-    if (param == NULL) return 0;
+    if (parameter == NULL) return 0;
 
-    // check if parameter is of corrent type
-    if (rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_INT16
-            && rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_UINT16)
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_INT16
+            && rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_UINT16)
     {
         // error
         RCP_ERROR("value parameter of wrong type!\n");
         return 0;
     }
 
-    return rcp_option_get_i16(param->value_option);
+    return rcp_option_get_i16(parameter->value_option);
 }
 
 //------------------------
@@ -1049,20 +1049,20 @@ void rcp_parameter_set_value_int32(rcp_value_parameter* parameter, int32_t value
     }
 }
 
-int32_t rcp_parameter_get_value_int32(rcp_value_parameter* param)
+int32_t rcp_parameter_get_value_int32(rcp_value_parameter* parameter)
 {
-    if (param == NULL) return 0;
+    if (parameter == NULL) return 0;
 
-    // check if parameter is of corrent type
-    if (rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_INT32
-            && rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_UINT32)
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_INT32
+            && rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_UINT32)
     {
         // error
         RCP_ERROR("value parameter of wrong type!\n");
         return 0;
     }
 
-    return rcp_option_get_i32(param->value_option);
+    return rcp_option_get_i32(parameter->value_option);
 }
 
 //------------------------
@@ -1081,19 +1081,19 @@ void rcp_parameter_set_value_float(rcp_value_parameter* parameter, float value)
     }
 }
 
-float rcp_parameter_get_value_float(rcp_value_parameter* param)
+float rcp_parameter_get_value_float(rcp_value_parameter* parameter)
 {
-	if (param == NULL) return 0;
+	if (parameter == NULL) return 0;
 
-    // check if parameter is of corrent type
-    if (rcp_typedefinition_get_type_id(param->parameter_base.typedefinition) != DATATYPE_FLOAT32)
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_FLOAT32)
     {
         // error
         RCP_ERROR("value parameter of wrong type!\n");
         return 0;
     }
 
-    return rcp_option_get_float(param->value_option);
+    return rcp_option_get_float(parameter->value_option);
 }
 
 //------------------------
@@ -2227,11 +2227,11 @@ void rcp_parameter_set_manager(rcp_parameter* parameter, rcp_manager* manager)
     parameter->manager = manager;    
 }
 
-bool rcp_parameter_is_value(rcp_parameter* param)
+bool rcp_parameter_is_value(rcp_parameter* parameter)
 {
-    if (param != NULL)
+    if (parameter != NULL)
     {
-        rcp_datatype dt = RCP_TYPE_ID(param);
+        rcp_datatype dt = RCP_TYPE_ID(parameter);
 
         return dt != DATATYPE_INVALID &&
                 dt < DATATYPE_MAX_ &&
