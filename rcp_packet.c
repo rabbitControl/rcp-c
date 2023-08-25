@@ -26,6 +26,20 @@
 #include "rcp_option.h"
 #include "rcp_parameter.h"
 
+
+#if defined(RCP_PACKET_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_PACKET_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_PACKET_DEBUG(...)
+#endif
+
+#if defined(RCP_PACKET_MALLOC_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_PACKET_MALLOC_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_PACKET_MALLOC_DEBUG(...)
+#endif
+
+
 struct rcp_packet
 {
     // mandatory
@@ -41,7 +55,7 @@ rcp_packet* rcp_packet_create(rcp_packet_command command)
 
     if (packet != NULL)
     {
-        RCP_DEBUG("*** packet: %p\n", packet);
+        RCP_PACKET_MALLOC_DEBUG("*** packet: %p\n", packet);
 
         packet->command = command;
     }
@@ -57,7 +71,7 @@ void rcp_packet_free(rcp_packet* packet)
 {
     if (packet == NULL) return;
 
-    RCP_DEBUG("||| free packet: %p\n", packet);
+    RCP_PACKET_MALLOC_DEBUG("||| free packet: %p\n", packet);
 
     rcp_option* opt = packet->options;
     rcp_option* next = NULL;
@@ -69,7 +83,7 @@ void rcp_packet_free(rcp_packet* packet)
         opt = next;
     }
 
-    RCP_DEBUG("+++ packet: %p\n", packet);
+    RCP_PACKET_MALLOC_DEBUG("+++ packet: %p\n", packet);
     RCP_FREE(packet);
 }
 
@@ -288,7 +302,7 @@ char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t*
 
     if (*out_packet != NULL)
     {
-        RCP_DEBUG("potential memory leak - out_packet != NULL");
+        RCP_PACKET_DEBUG("potential memory leak - out_packet != NULL");
     }
 
     rcp_packet* packet = NULL;
@@ -329,7 +343,7 @@ char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t*
         }
         else
         {
-            RCP_DEBUG("could not parse parameter (updatevalue)\n");
+            RCP_PACKET_DEBUG("could not parse parameter (updatevalue)\n");
             rcp_packet_free(packet);
             return NULL;
         }
@@ -407,7 +421,7 @@ char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t*
                 else
                 {
                     // parsing error
-                    RCP_DEBUG("could not parse infodata\n");
+                    RCP_PACKET_DEBUG("could not parse infodata\n");
                     rcp_packet_free(packet);
                     return NULL;
                 }
@@ -428,7 +442,7 @@ char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t*
                 else
                 {
                     // parsing error
-                    RCP_DEBUG("could not parse parameter\n");
+                    RCP_PACKET_DEBUG("could not parse parameter\n");
                     rcp_packet_free(packet);
                     return NULL;
                 }
@@ -448,7 +462,7 @@ char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t*
     }
 
     // parsing error
-    RCP_DEBUG("packet parsing error\n");
+    RCP_PACKET_DEBUG("packet parsing error\n");
     rcp_packet_free(packet);
     return NULL;
 }
@@ -500,7 +514,7 @@ size_t rcp_packet_write_buf(rcp_packet* packet, char* data, size_t size, bool al
 
     if (size < packet_size)
     {
-        RCP_DEBUG("destination buffer not big enough\n");
+        RCP_PACKET_DEBUG("destination buffer not big enough\n");
         return 0;
     }
 
@@ -522,7 +536,7 @@ size_t rcp_packet_write_buf(rcp_packet* packet, char* data, size_t size, bool al
             return 0;
         }
 
-        RCP_DEBUG("written update value bytes: %d\n", written_len);
+        RCP_PACKET_DEBUG("written update value bytes: %d\n", written_len);
         return written + written_len;
     }
 
@@ -571,13 +585,13 @@ size_t rcp_packet_write(rcp_packet* packet, char** dst, bool all)
     // check for potential memory leak
     if (*dst != NULL)
     {
-        RCP_DEBUG("potential memory leak - *dst != NULL\n");
+        RCP_PACKET_DEBUG("potential memory leak - *dst != NULL\n");
     }
 
 
     // get serialized size
     size_t packet_data_size = _packet_size(packet, all);
-    RCP_DEBUG("packet size: %d\n", packet_data_size);
+    RCP_PACKET_DEBUG("packet size: %d\n", packet_data_size);
 
     // alloc memory
     *dst = RCP_CALLOC(1, packet_data_size);
@@ -587,13 +601,13 @@ size_t rcp_packet_write(rcp_packet* packet, char** dst, bool all)
         return 0;
     }
 
-    RCP_DEBUG("*** data output: %p\n", *dst);
+    RCP_PACKET_MALLOC_DEBUG("*** data output: %p\n", *dst);
 
     size_t written = rcp_packet_write_buf(packet, *dst, packet_data_size, all);
     if (written == 0)
     {
         // free data
-        RCP_DEBUG("+++ data output: %p\n", *dst);
+        RCP_PACKET_MALLOC_DEBUG("+++ data output: %p\n", *dst);
         RCP_FREE(*dst);
         *dst = NULL;
     }

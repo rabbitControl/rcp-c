@@ -28,6 +28,9 @@ extern "C"{
 #include "rcp_manager_type.h"
 #include "rcp_typedefinition_type.h"
 
+//#define RCP_PARAMETER_DEBUG_LOG
+//#define RCP_PARAMETER_MALLOC_DEBUG_LOG
+
 #define RCP_TYPE_ID(x) (x != NULL ? rcp_typedefinition_get_type_id(rcp_parameter_get_typedefinition(x)) : DATATYPE_INVALID)
 #define RCP_PARAMETER(x) ((rcp_parameter*)x)
 #define RCP_VALUE_PARAMETER(x) ((rcp_value_parameter*)x)

@@ -31,6 +31,9 @@ extern "C"{
 #include "rcp_option_type.h"
 #include "rcp_stringlist.h"
 
+//#define RCP_TYPEDEFINITION_DEBUG_LOG
+//#define RCP_TYPEDEFINITION_MALLOC_DEBUG_LOG
+
 
 // create / free
 rcp_typedefinition* rcp_typedefinition_create(rcp_datatype type_id);

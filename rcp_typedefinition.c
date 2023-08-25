@@ -25,6 +25,18 @@
 #include "rcp_logging.h"
 #include "rcp_option.h"
 
+#if defined(RCP_TYPEDEFINITION_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_TYPEDEFINITION_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_TYPEDEFINITION_DEBUG(...)
+#endif
+
+#if defined(RCP_TYPEDEFINITION_MALLOC_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_TYPEDEFINITION_MALLOC_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_TYPEDEFINITION_MALLOC_DEBUG(...)
+#endif
+
 struct rcp_typedefinition
 {
     // mandatory
@@ -51,7 +63,7 @@ rcp_typedefinition* rcp_typedefinition_create(rcp_datatype type_id)
 
     if (td != NULL)
     {
-        RCP_DEBUG("*** type definition: %p\n", td);
+        RCP_TYPEDEFINITION_MALLOC_DEBUG("*** type definition: %p\n", td);
 
         td->type_id = type_id;
     }
@@ -65,7 +77,7 @@ void rcp_typedefinition_free(rcp_typedefinition* typedefinition)
     {
         rcp_option_free_chain(typedefinition->options);
 
-        RCP_DEBUG("+++ typedefinition: %p\n", typedefinition);
+        RCP_TYPEDEFINITION_MALLOC_DEBUG("+++ typedefinition: %p\n", typedefinition);
         RCP_FREE(typedefinition);
     }
 
@@ -250,7 +262,7 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
 {
     if (typedefinition == NULL) return data;
 
-    RCP_DEBUG("parse_number_value: %d\n", typedefinition->type_id);
+    RCP_TYPEDEFINITION_DEBUG("parse_number_value: %d\n", typedefinition->type_id);
 
     switch (typedefinition->type_id)
     {
@@ -342,7 +354,7 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
 	}
     }
 
-    RCP_DEBUG("wrong type or not implemented: did not read value!");
+    RCP_TYPEDEFINITION_DEBUG("wrong type or not implemented: did not read value!");
     return NULL;
 }
 
@@ -350,7 +362,7 @@ char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, 
 {
     if (typedefinition == NULL) return data;
 
-    RCP_DEBUG("parse_string_value: %d\n", typedefinition->type_id);
+    RCP_TYPEDEFINITION_DEBUG("parse_string_value: %d\n", typedefinition->type_id);
 
     if (typedefinition->type_id == DATATYPE_STRING)
     {
@@ -375,7 +387,7 @@ char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, 
         return data;
     }
 
-    RCP_DEBUG("wrong type: did not read value!");
+    RCP_TYPEDEFINITION_DEBUG("wrong type: did not read value!");
     return NULL;
 }
 
@@ -383,7 +395,7 @@ static char* rcp_typedefinition_parse_stringlist_value(rcp_typedefinition* typed
 {
     if (typedefinition == NULL) return data;
 
-    RCP_DEBUG("parse_stringlist_value: %d\n", typedefinition->type_id);
+    RCP_TYPEDEFINITION_DEBUG("parse_stringlist_value: %d\n", typedefinition->type_id);
 
     // INFO: we know it is a enum-type...
 
@@ -429,7 +441,7 @@ char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, s
 {
     if (typedefinition == NULL) return NULL;
 
-    RCP_DEBUG("parse_number_type_option: %d\n", number_option);
+    RCP_TYPEDEFINITION_DEBUG("parse_number_type_option: %d\n", number_option);
 
     rcp_option* opt;
 
@@ -474,7 +486,7 @@ char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, s
 {
     if (typedefinition == NULL) return NULL;
 
-    RCP_DEBUG("parse_string_type_option: %d\n", option);
+    RCP_TYPEDEFINITION_DEBUG("parse_string_type_option: %d\n", option);
 
     rcp_option* opt;
 
@@ -496,7 +508,7 @@ char* parse_enum_type_option(rcp_typedefinition* typedefinition, char* data, siz
 {
     if (typedefinition == NULL) return NULL;
 
-    RCP_DEBUG("parse_string_type_option: %d\n", option);
+    RCP_TYPEDEFINITION_DEBUG("parse_string_type_option: %d\n", option);
 
     rcp_option* opt;
 
@@ -528,7 +540,7 @@ static char* parse_bool_type_option(rcp_typedefinition* typedefinition, char* da
 {
     if (typedefinition == NULL) return NULL;
 
-    RCP_DEBUG("parse_bool_type_option: %d\n", option);
+    RCP_TYPEDEFINITION_DEBUG("parse_bool_type_option: %d\n", option);
 
     rcp_option* opt;
 
@@ -570,13 +582,13 @@ char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, 
         if (option_prefix == RCP_TERMINATOR)
         {
             // terminator - end of typedefinition
-            RCP_DEBUG("parse_type_options - terminator\n");
+            RCP_TYPEDEFINITION_DEBUG("parse_type_options - terminator\n");
             return data;
         }
 
         if (*size == 0) return NULL;
 
-        RCP_DEBUG("parse_type_options - option_prefix: %d\n", option_prefix);
+        RCP_TYPEDEFINITION_DEBUG("parse_type_options - option_prefix: %d\n", option_prefix);
 
         // we need to handle option per typedefinition!
         switch (typedefinition->type_id)

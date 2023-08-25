@@ -30,6 +30,9 @@ extern "C"{
 #include "rcp_infodata.h"
 #include "rcp_stringlist.h"
 
+//#define RCP_OPTION_DEBUG_LOG
+//#define RCP_OPTION_MALLOC_DEBUG_LOG
+
 
 // create / free
 rcp_option* rcp_option_create(char prefix);

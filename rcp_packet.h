@@ -28,6 +28,9 @@ extern "C"{
 #include "rcp_parameter_type.h"
 #include "rcp_infodata.h"
 
+//#define RCP_PACKET_DEBUG_LOG
+//#define RCP_PACKET_MALLOC_DEBUG_LOG
+
 // create / free
 rcp_packet* rcp_packet_create(rcp_packet_command command);
 void rcp_packet_free(rcp_packet* packet);

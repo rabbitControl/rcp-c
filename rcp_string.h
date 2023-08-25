@@ -28,6 +28,9 @@ extern "C"{
 #define RCP_SHORT_STRING_MAX_SIZE 65535
 #define RCP_LONG_STRING_MAX_SIZE 4294967295
 
+//#define RCP_STRING_DEBUG_LOG
+//#define RCP_STRING_MALLOC_DEBUG_LOG
+
 
 char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str_length);
 char* rcp_read_short_string(char* data, size_t* size, char** target, uint16_t* str_length);

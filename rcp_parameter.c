@@ -34,6 +34,19 @@
 #include "rcp_typedefinition.h"
 
 
+#if defined(RCP_PARAMETER_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_PARAMETER_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_PARAMETER_DEBUG(...)
+#endif
+
+#if defined(RCP_PARAMETER_MALLOC_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_PARAMETER_MALLOC_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_PARAMETER_MALLOC_DEBUG(...)
+#endif
+
+
 struct rcp_parameter
 {
     // mandatory
@@ -79,21 +92,21 @@ static rcp_value_parameter* _create_value_parameter(int16_t id, rcp_datatype typ
 {
     if (id == 0)
     {
-        RCP_DEBUG("reject creating parameter with id 0\n");
+        RCP_PARAMETER_DEBUG("reject creating parameter with id 0\n");
         return NULL;
     }
 
-    rcp_value_parameter* param = (rcp_value_parameter*)RCP_CALLOC(1, sizeof(rcp_value_parameter));
+    rcp_value_parameter* parameter = (rcp_value_parameter*)RCP_CALLOC(1, sizeof(rcp_value_parameter));
 
-    if (param)
+    if (parameter)
     {
-        RCP_DEBUG("*** param: %p\n", param);
+        RCP_PARAMETER_MALLOC_DEBUG("*** param: %p\n", parameter);
 
-        RCP_PARAMETER(param)->typedefinition = rcp_typedefinition_create(typeid);
-        RCP_PARAMETER(param)->id = id;
+        RCP_PARAMETER(parameter)->typedefinition = rcp_typedefinition_create(typeid);
+        RCP_PARAMETER(parameter)->id = id;
     }
 
-    return param;
+    return parameter;
 }
 
 static inline bool is_value_type(rcp_datatype type)
@@ -158,36 +171,36 @@ rcp_bang_parameter* rcp_bang_parameter_create(int16_t id)
 {
     if (id == 0) return NULL;
 
-    rcp_bang_parameter* param = (rcp_bang_parameter*)RCP_CALLOC(1, sizeof(rcp_bang_parameter));
+    rcp_bang_parameter* parameter = (rcp_bang_parameter*)RCP_CALLOC(1, sizeof(rcp_bang_parameter));
 
-    if (param)
+    if (parameter)
     {
-        RCP_DEBUG("*** param: %p\n", param);
+        RCP_PARAMETER_MALLOC_DEBUG("*** param: %p\n", parameter);
 
         // create typedef
-        param->parameter_base.typedefinition = rcp_typedefinition_create(DATATYPE_BANG);
-        param->parameter_base.id = id;
+        parameter->parameter_base.typedefinition = rcp_typedefinition_create(DATATYPE_BANG);
+        parameter->parameter_base.id = id;
     }
 
-    return param;
+    return parameter;
 }
 
 rcp_group_parameter* rcp_group_parameter_create(int16_t id)
 {
     if (id == 0) return NULL;
 
-    rcp_group_parameter* param = (rcp_group_parameter*)RCP_CALLOC(1, sizeof(rcp_group_parameter));
+    rcp_group_parameter* parameter = (rcp_group_parameter*)RCP_CALLOC(1, sizeof(rcp_group_parameter));
 
-    if (param)
+    if (parameter)
     {
-        RCP_DEBUG("*** param: %p\n", param);
+        RCP_PARAMETER_MALLOC_DEBUG("*** param: %p\n", parameter);
 
         // create typedef
-        RCP_PARAMETER(param)->typedefinition = rcp_typedefinition_create(DATATYPE_GROUP);
-        RCP_PARAMETER(param)->id = id;
+        RCP_PARAMETER(parameter)->typedefinition = rcp_typedefinition_create(DATATYPE_GROUP);
+        RCP_PARAMETER(parameter)->id = id;
     }
 
-    return param;
+    return parameter;
 }
 
 
@@ -207,37 +220,37 @@ static void free_group_parameter(rcp_group_parameter* group)
         // INFO: don't free children here! (just cleanup the list)
         // parameters are either manager in the manager or have to be freed manually
 
-        RCP_DEBUG("+++ children list item: %p\n", list);
+        RCP_PARAMETER_MALLOC_DEBUG("+++ children list item: %p\n", list);
         RCP_FREE(list);
 
         list = next;
     }
 }
 
-void rcp_parameter_free(rcp_parameter* param)
+void rcp_parameter_free(rcp_parameter* parameter)
 {
-    if (param == NULL) return;
+    if (parameter == NULL) return;
 
     // before freeing base parameter, free type specific data
-    if (rcp_parameter_is_group(param))
+    if (rcp_parameter_is_group(parameter))
     {
-        free_group_parameter(RCP_GROUP_PARAMETER(param));
+        free_group_parameter(RCP_GROUP_PARAMETER(parameter));
     }
 
     //---
     // free all option
 
-    RCP_DEBUG("free all option of parameter: %d\n", param->id);
+    RCP_PARAMETER_DEBUG("free all option of parameter: %d\n", parameter->id);
 
-    rcp_option_free_chain(param->options);
+    rcp_option_free_chain(parameter->options);
 //    free_option_chain(param->removed_options);
 
     // free type options
-    rcp_typedefinition_free(param->typedefinition);
-    param->typedefinition = NULL;
+    rcp_typedefinition_free(parameter->typedefinition);
+    parameter->typedefinition = NULL;
 
-    RCP_DEBUG("+++ parameter: %p\n", param);
-    RCP_FREE(param);
+    RCP_PARAMETER_MALLOC_DEBUG("+++ parameter: %p\n", parameter);
+    RCP_FREE(parameter);
 }
 
 bool rcp_parameter_is_type(rcp_parameter* parameter, rcp_datatype type)
@@ -310,7 +323,7 @@ void rcp_parameter_copy_from(rcp_parameter* dst, rcp_parameter* src)
     rcp_option* src_opt = src->options;
 	while (src_opt != NULL)
 	{
-        RCP_DEBUG("from opt: %p (%d)\n", src_opt, rcp_option_get_prefix(src_opt));
+        RCP_PARAMETER_DEBUG("from opt: %p (%d)\n", src_opt, rcp_option_get_prefix(src_opt));
 		
         // add option or update existing option
         rcp_option* dst_opt = rcp_option_add_or_update(&dst->options, src_opt);
@@ -348,7 +361,7 @@ void rcp_parameter_copy_from(rcp_parameter* dst, rcp_parameter* src)
 
     if (value_parameter)
     {
-        RCP_DEBUG("call value udpated cb\n");
+        RCP_PARAMETER_DEBUG("call value udpated cb\n");
 
         if (value_parameter->valueUpdatedCb != NULL)
         {
@@ -360,7 +373,7 @@ void rcp_parameter_copy_from(rcp_parameter* dst, rcp_parameter* src)
 
     if (call_update_cb)
     {
-        RCP_DEBUG("call udpated cb\n");
+        RCP_PARAMETER_DEBUG("call udpated cb\n");
 
         if (dst->optionUpdatedCb != NULL)
         {
@@ -549,7 +562,7 @@ static void _add_child(rcp_group_parameter* group, rcp_parameter* parameter)
     rcp_parameter_list* new_child = RCP_MALLOC(sizeof(rcp_parameter_list));
     if (new_child)
     {
-        RCP_DEBUG("*** param list entry: %p\n", new_child);
+        RCP_PARAMETER_MALLOC_DEBUG("*** param list entry: %p\n", new_child);
 
         new_child->next = group->children;
         new_child->parameter = parameter;
@@ -586,7 +599,7 @@ static void _remove_from_parent(rcp_parameter* parameter)
             }
 
             child_item->next = NULL;
-            RCP_DEBUG("+++ param list entry: %p\n", child_item);
+            RCP_PARAMETER_MALLOC_DEBUG("+++ param list entry: %p\n", child_item);
             RCP_FREE(child_item);
 
             return;
@@ -614,7 +627,7 @@ rcp_parameter_list* rcp_group_get_children(rcp_group_parameter* group)
  */
 void rcp_parameter_set_parent(rcp_parameter* parameter, rcp_group_parameter* group)
 {
-    RCP_DEBUG("parameter set parent: %d\n", rcp_parameter_get_id(group));
+    RCP_PARAMETER_DEBUG("parameter set parent: %d\n", rcp_parameter_get_id(group));
 
     if (parameter == NULL) return;
     if (parameter->parent == NULL && group == NULL) return;
@@ -685,7 +698,7 @@ void rcp_parameter_resolve_parent(rcp_parameter* parameter)
         }
         else
         {
-            RCP_DEBUG("could not find group with id: %d\n", parent_id);
+            RCP_PARAMETER_DEBUG("could not find group with id: %d\n", parent_id);
         }
     }
     else
@@ -754,12 +767,12 @@ void rcp_parameter_set_tags(rcp_parameter* parameter, const char* tags)
 {
     if (parameter == NULL) return;
 
-    RCP_DEBUG("parameter_set_tags\n");
+    RCP_PARAMETER_DEBUG("parameter_set_tags\n");
 
     // check if we have that option
     rcp_option* opt = rcp_option_get_create(&parameter->options, PARAMETER_OPTIONS_TAGS);
 
-    RCP_DEBUG("parameter_set_tags: %p\n", opt);
+    RCP_PARAMETER_DEBUG("parameter_set_tags: %p\n", opt);
 
     rcp_option_free_data(opt);
 
@@ -1300,7 +1313,7 @@ void rcp_parameter_set_value_string(rcp_value_parameter* parameter, const char* 
     else
     {
         // error!
-        RCP_DEBUG("parameter not of type string");
+        RCP_PARAMETER_DEBUG("parameter not of type string");
     }
 }
 
@@ -1532,7 +1545,7 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
 
 //        case DATATYPE_RANGE:
         default:
-            RCP_DEBUG("datatype not implements\n");
+            RCP_PARAMETER_DEBUG("datatype not implements\n");
             break;
         }
 
@@ -1561,7 +1574,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
             || rcp_typedefinition_get_type_id(parameter->typedefinition) >= DATATYPE_MAX_)
     {
         // invalid!
-        RCP_DEBUG("parse_parameter_options - invalid type\n");
+        RCP_PARAMETER_DEBUG("parse_parameter_options - invalid type\n");
         return NULL;
     }
 
@@ -1576,7 +1589,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
         data = rcp_read_u8(data, size, &option_prefix);
         if (data == NULL) return NULL;
 
-        RCP_DEBUG("parse_parameter_options - prefix: %d\n", option_prefix);
+        RCP_PARAMETER_DEBUG("parse_parameter_options - prefix: %d\n", option_prefix);
 
         if (option_prefix == RCP_TERMINATOR)
         {
@@ -1595,7 +1608,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
 
         // ok - continue
 
-        RCP_DEBUG("parse_parameter_options - option_prefix: %d\n", option_prefix);
+        RCP_PARAMETER_DEBUG("parse_parameter_options - option_prefix: %d\n", option_prefix);
 
         switch ((rcp_parameter_options)option_prefix)
         {
@@ -1660,7 +1673,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
                 rcp_langstr_set_next(lng_str, lng_strs);
                 lng_strs = lng_str;                
 
-                RCP_DEBUG("label: %s: %s\n", rcp_langstr_get_code(lng_str), rcp_langstr_get_string(lng_str));
+                RCP_PARAMETER_DEBUG("label: %s: %s\n", rcp_langstr_get_code(lng_str), rcp_langstr_get_string(lng_str));
             }
             // step over terminator
             data++;
@@ -1726,7 +1739,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
                 rcp_langstr_set_next(lng_str, lng_strs);
                 lng_strs = lng_str;
 
-                RCP_DEBUG("description: %s: %s\n", rcp_langstr_get_code(lng_str), rcp_langstr_get_string(lng_str));
+                RCP_PARAMETER_DEBUG("description: %s: %s\n", rcp_langstr_get_code(lng_str), rcp_langstr_get_string(lng_str));
             }
 
             // step over terminator
@@ -1778,14 +1791,14 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
             data = rcp_read_i16(data, size, &d);
             if (data == NULL) return NULL;
 
-            RCP_DEBUG("set parent-id: %d\n", d);
+            RCP_PARAMETER_DEBUG("set parent-id: %d\n", d);
             rcp_option_set_i16(opt, d);
             break;
         }
 
         case PARAMETER_OPTIONS_WIDGET:
             // not supported
-            RCP_DEBUG("widget option is not supported!");
+            RCP_PARAMETER_DEBUG("widget option is not supported!");
             return NULL;
 
         case PARAMETER_OPTIONS_USERDATA:
@@ -2051,7 +2064,7 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
 
     if (size < 2)
     {
-        RCP_DEBUG("could not write id - buffer overflow\n");
+        RCP_PARAMETER_DEBUG("could not write id - buffer overflow\n");
         return 0;
     }
 
@@ -2059,7 +2072,7 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
     size_t written = 0;
 
     // write parameter id
-    RCP_DEBUG("write parameter id: %d\n", parameter->id);
+    RCP_PARAMETER_DEBUG("write parameter id: %d\n", parameter->id);
 
     _rcp_store16(data, (uint16_t)parameter->id);
 
@@ -2073,7 +2086,7 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
     size_t written_len = rcp_typedefinition_write(parameter->typedefinition, data, size - written, all);
     if (written_len == 0)
     {
-        RCP_DEBUG("error writing type definition\n");
+        RCP_PARAMETER_DEBUG("error writing type definition\n");
         return 0;
     }
 
@@ -2081,7 +2094,7 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
 
     if (written >= size)
     {
-        RCP_DEBUG("offset >= data_size! 1\n");
+        RCP_PARAMETER_DEBUG("offset >= data_size! 1\n");
         return 0;
     }
 
@@ -2097,7 +2110,7 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
             written_len = rcp_option_write(opt, data, size - written, all);
             if (written_len == 0)
             {
-                RCP_DEBUG("error writing option: %d\n", rcp_option_get_prefix(opt));
+                RCP_PARAMETER_DEBUG("error writing option: %d\n", rcp_option_get_prefix(opt));
                 return 0;
             }
 
@@ -2107,7 +2120,7 @@ size_t rcp_parameter_write(rcp_parameter* parameter, char* data, size_t size, bo
 
                 if (written >= size)
                 {
-                    RCP_DEBUG("offset >= data_size! 2\n");
+                    RCP_PARAMETER_DEBUG("offset >= data_size! 2\n");
                     return 0;
                 }
 
@@ -2140,7 +2153,7 @@ size_t rcp_parameter_write_updatevalue(rcp_parameter* parameter, char* dst, size
 
     if (size < 2)
     {
-        RCP_DEBUG("could not write id - buffer overflow\n");
+        RCP_PARAMETER_DEBUG("could not write id - buffer overflow\n");
         return 0;
     }
 

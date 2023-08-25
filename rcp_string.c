@@ -25,6 +25,18 @@
 #include "rcp_logging.h"
 #include "rcp_endian.h"
 
+#if defined(RCP_STRING_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_STRING_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_STRING_DEBUG(...)
+#endif
+
+#if defined(RCP_STRING_MALLOC_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_STRING_MALLOC_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_STRING_MALLOC_DEBUG(...)
+#endif
+
 // read tiny string from data and store it into option
 char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size, char option_prefix)
 {
@@ -40,7 +52,7 @@ char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size
             str_len > 0 &&
             string_data != NULL)
     {
-        RCP_DEBUG("tiny string: %s\n", string_data);
+        RCP_STRING_DEBUG("tiny string: %s\n", string_data);
 
         rcp_option* opt = rcp_option_get_create(options, option_prefix);
         rcp_option_free_data(opt);
@@ -50,7 +62,7 @@ char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size
     }
     else
     {
-        RCP_DEBUG("error reading tiny string: %s\n", string_data);
+        RCP_STRING_DEBUG("error reading tiny string: %s\n", string_data);
     }
 
     return data;
@@ -70,7 +82,7 @@ char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* siz
             str_len > 0 &&
             string_data != NULL)
     {
-        RCP_DEBUG("short string: %s\n", string_data);
+        RCP_STRING_DEBUG("short string: %s\n", string_data);
 
         rcp_option* opt = rcp_option_get_create(options, option_prefix);
         rcp_option_free_data(opt);
@@ -80,7 +92,7 @@ char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* siz
     }
     else
     {
-        RCP_DEBUG("error reading short string: %s\n", string_data);
+        RCP_STRING_DEBUG("error reading short string: %s\n", string_data);
     }
 
     return data;
@@ -105,7 +117,7 @@ char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str
         *target = (char*)RCP_CALLOC(1, *str_length + 1);
         if (*target != NULL)
         {
-            RCP_DEBUG("*** tiny string: %p\n", (void*)*target);
+            RCP_STRING_MALLOC_DEBUG("*** tiny string: %p\n", (void*)*target);
 
             // copy data
             strncpy(*target, data, *str_length);
@@ -147,7 +159,7 @@ char* rcp_read_short_string(char* data, size_t* size, char** target, uint16_t* s
         *target = RCP_CALLOC(1, *str_length + 1);
         if (*target != NULL)
         {
-            RCP_DEBUG("*** short string: %p\n", (void*)*target);
+            RCP_STRING_MALLOC_DEBUG("*** short string: %p\n", (void*)*target);
 
             // copy data
             strncpy(*target, data, *str_length);
@@ -190,7 +202,7 @@ char* rcp_read_long_string(char* data, size_t* size, char** target, uint32_t* st
         *target = (char*)RCP_CALLOC(1, *str_length + 1);
         if (*target != NULL)
         {
-            RCP_DEBUG("*** long string [%d]: %p\n", *str_length, (void*)*target);
+            RCP_STRING_MALLOC_DEBUG("*** long string [%d]: %p\n", *str_length, (void*)*target);
 
             // copy data
             strncpy(*target, data, *str_length);
@@ -284,7 +296,7 @@ size_t rcp_write_long_string(char* dst, size_t size, const char* str)
     if (dst == NULL) return 0;
     if (size == 0) return 0;
 
-    RCP_DEBUG("write_long_string: %s\n", (str != NULL ? str : "null"));
+    RCP_STRING_DEBUG("rcp_write_long_string: %s\n", (str != NULL ? str : "null"));
 
     size_t str_len = str != NULL ? strlen(str) : 0;
 

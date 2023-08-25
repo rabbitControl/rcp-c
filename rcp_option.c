@@ -28,6 +28,18 @@
 
 #define RCP_OPTION_PTR_DATA_PREFIX_SIZE 4
 
+#if defined(RCP_OPTION_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_OPTION_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_OPTION_DEBUG(...)
+#endif
+
+#if defined(RCP_OPTION_MALLOC_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
+#define RCP_OPTION_MALLOC_DEBUG(...) RCP_DEBUG(__VA_ARGS__)
+#else
+#define RCP_OPTION_MALLOC_DEBUG(...)
+#endif
+
 typedef enum rcp_option_data_type
 {
     RCP_NONE = 0,
@@ -110,7 +122,7 @@ rcp_option* rcp_option_create(char prefix)
 
     if (opt)
     {
-        RCP_DEBUG("*** option [0x%02x]: %p\n", prefix, opt);
+        RCP_OPTION_MALLOC_DEBUG("*** option [0x%02x]: %p\n", prefix, opt);
 
         opt->prefix = prefix;
     }
@@ -163,7 +175,7 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
     if (src == NULL) return;
     if (dst == src) return;
 
-    RCP_DEBUG("%s\n", __FUNCTION__);
+    RCP_OPTION_DEBUG("%s\n", __FUNCTION__);
 
     rcp_option_free_data(dst);
     // datatypes are the same!
@@ -195,11 +207,11 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
     }
     else if (src->data_type == RCP_INFO_DATA)
     {
-        RCP_DEBUG("infodata should not be owned by the option!\n");
+        RCP_OPTION_DEBUG("infodata should not be owned by the option!\n");
     }
     else if (src->data_type == RCP_PARAMETER_DATA)
     {
-        RCP_DEBUG("parameter should not be owned by the option!\n");
+        RCP_OPTION_DEBUG("parameter should not be owned by the option!\n");
     }
     else if (src->data_type == RCP_PTR)
     {
@@ -208,7 +220,7 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
 
         if (dst->data.data)
         {
-            RCP_DEBUG("*** option data: %p [%d]\n", dst->data.data, size);
+            RCP_OPTION_MALLOC_DEBUG("*** option data: %p [%d]\n", dst->data.data, size);
 
             memcpy(dst->data.data, src->data.data, size);
 
@@ -244,18 +256,18 @@ rcp_option* rcp_option_add_or_update(rcp_option** options, rcp_option* src)
                 return NULL;
             }
 
-            RCP_DEBUG("%s - updating option: %d\n", __FUNCTION__, opt->prefix);
+            RCP_OPTION_DEBUG("%s - updating option: %d\n", __FUNCTION__, opt->prefix);
 
             if (RCP_OPTION_OWNS_DATA(src))
 			{
-                RCP_DEBUG("src is owning the data! - opt owning %d\n", RCP_OPTION_OWNS_DATA(opt));
+                RCP_OPTION_DEBUG("src is owning the data! - opt owning %d\n", RCP_OPTION_OWNS_DATA(opt));
                 _copy_option_data(opt, src);
             }
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
             else if (opt->externalSetCb != NULL)
             {
                 // TODO: use extnernal set
-                RCP_DEBUG("TODO: use external SET");
+                RCP_OPTION_DEBUG("TODO: use external SET");
             }
 #endif
             else if (opt->data.data != src->data.data)
@@ -277,13 +289,13 @@ rcp_option* rcp_option_add_or_update(rcp_option** options, rcp_option* src)
 
     // no option found
     // create new option and add it to parameter
-    RCP_DEBUG("rcp_option_add_or_update - creating new option: %d\n", src->prefix);
+    RCP_OPTION_DEBUG("rcp_option_add_or_update - creating new option: %d\n", src->prefix);
 
     rcp_option* new_opt = (rcp_option*)RCP_CALLOC(1, sizeof(rcp_option));
 
     if (new_opt != NULL)
     {
-        RCP_DEBUG("*** option own[0x%02x]: %p\n", src->prefix, new_opt);
+        RCP_OPTION_MALLOC_DEBUG("*** option own[0x%02x]: %p\n", src->prefix, new_opt);
 
         if (RCP_OPTION_OWNS_DATA(src))
         {
@@ -337,7 +349,7 @@ void rcp_option_free(rcp_option* opt)
     {
         rcp_option_free_data(opt);
 
-        RCP_DEBUG("+++ option[0x%02x]: %p\n", opt->prefix, opt);
+        RCP_OPTION_MALLOC_DEBUG("+++ option[0x%02x]: %p\n", opt->prefix, opt);
         RCP_FREE(opt);
     }
 }
@@ -351,7 +363,7 @@ void rcp_option_free_data(rcp_option* opt)
     {
         if (RCP_OPTION_OWNS_DATA(opt))
         {
-            RCP_DEBUG("OWNING DATA! - %d - datatype: %d\n", opt->prefix, opt->data_type);
+            RCP_OPTION_DEBUG("OWNING DATA! - %d - datatype: %d\n", opt->prefix, opt->data_type);
 
             if (opt->data_type == RCP_LANGUAGE_STRING)
             {
@@ -373,7 +385,7 @@ void rcp_option_free_data(rcp_option* opt)
                 if (opt->data.data != NULL)
                 {
                     // just free that pointer data
-                    RCP_DEBUG("+++ option data: %p\n", opt->data.data);
+                    RCP_OPTION_MALLOC_DEBUG("+++ option data: %p\n", opt->data.data);
                     RCP_FREE(opt->data.data);
                 }
             }
@@ -436,7 +448,7 @@ size_t rcp_option_get_data_size(rcp_option* opt)
     if (opt == NULL) return 0;
 
 #ifdef RCP_OPTION_USE_EXTERNAL_GET_SET
-    RCP_DEBUG("option_get_size: %p\n", opt->externalGetCb);
+    RCP_OPTION_DEBUG("option_get_size: %p\n", opt->externalGetCb);
 
     if (opt->externalGetCb != NULL)
     {
@@ -444,7 +456,7 @@ size_t rcp_option_get_data_size(rcp_option* opt)
         size_t size;
         opt->externalGetCb(NULL, &size);
 
-        RCP_DEBUG("size from cb: %ld\n", size);
+        RCP_OPTION_DEBUG("size from cb: %ld\n", size);
 
         if (opt->data_type == RCP_TINY_STRING)
         {
@@ -504,7 +516,7 @@ size_t rcp_option_write_value(rcp_option* opt, char* data, size_t size)
 //            PARAMETER_DATA
 //            STRINGLIST
 
-            RCP_DEBUG("not handled!\n");
+            RCP_OPTION_DEBUG("not handled!\n");
             return 0;
         }
 
@@ -730,7 +742,7 @@ bool rcp_option_copy_data(rcp_option* opt, void* data, size_t size)
     void* cpy = RCP_MALLOC(size);
     if (cpy != NULL)
     {
-        RCP_DEBUG("*** user data: %p\n", cpy);
+        RCP_OPTION_MALLOC_DEBUG("*** user data: %p\n", cpy);
 
         memcpy(cpy, data, size);
 
@@ -741,7 +753,7 @@ bool rcp_option_copy_data(rcp_option* opt, void* data, size_t size)
         return true;
     }
 
-    RCP_DEBUG("could not allocate memory for data: %d\n", size);
+    RCP_OPTION_DEBUG("could not allocate memory for data: %d\n", size);
     return false;
 }
 
@@ -776,7 +788,7 @@ bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
     if (opt->externalSetCb != NULL)
     {
         // use external set
-        RCP_DEBUG("set string - call external set");
+        RCP_OPTION_DEBUG("set string - call external set");
         return opt->externalSetCb((void*)str, strlen(str));
     }
 #endif
@@ -853,7 +865,7 @@ bool rcp_option_copy_string(rcp_option* opt, const char* data, rcp_string_types 
         if (opt->data.str != NULL)
         {
             // memory successfully allocated
-            RCP_DEBUG("*** string: %p\n", opt->data.str);
+            RCP_OPTION_MALLOC_DEBUG("*** string: %p\n", opt->data.str);
 
             // copy string
             strncpy(opt->data.str, data, str_len);
@@ -1042,7 +1054,7 @@ const char* rcp_option_get_string(rcp_option* opt, rcp_string_types type)
             rcp_option_set_data(opt, data, size - 4 + type);
 
             // expect data to be 0-terminated string
-            RCP_DEBUG("from external get: %ld - %s\n", size, data);
+            RCP_OPTION_DEBUG("from external get: %ld - %s\n", size, data);
         }
     }
 #endif
@@ -1310,7 +1322,7 @@ size_t rcp_option_get_size(rcp_option* opt, bool force)
         size_t ext_size;
         opt->externalGetCb(NULL, &ext_size);
 
-        RCP_DEBUG("size from cb: %ld - %d\n", ext_size, opt->data_type);
+        RCP_OPTION_DEBUG("size from cb: %ld - %d\n", ext_size, opt->data_type);
 
         if (opt->data_type == RCP_TINY_STRING)
         {
@@ -1335,7 +1347,7 @@ size_t rcp_option_get_size(rcp_option* opt, bool force)
         size += opt->data_size;
     }
 
-    RCP_DEBUG("option size [0x%02x]: %lu\n", opt->prefix, size);
+    RCP_OPTION_DEBUG("option size [0x%02x]: %lu\n", opt->prefix, size);
 
     return size;
 }
@@ -1356,7 +1368,7 @@ size_t rcp_option_write(rcp_option* opt, char* data, size_t size, bool force)
 
     if (written >= size)
     {
-        RCP_DEBUG("offset >= data_size!\n");
+        RCP_OPTION_DEBUG("offset >= data_size!\n");
         return 0;
     }
 
