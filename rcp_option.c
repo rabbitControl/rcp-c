@@ -25,6 +25,7 @@
 #include "rcp_string.h"
 #include "rcp_infodata.h"
 #include "rcp_parameter.h"
+#include "rcp_vector2.h"
 
 #define RCP_OPTION_PTR_DATA_PREFIX_SIZE 4
 
@@ -58,6 +59,7 @@ typedef enum rcp_option_data_type
     RCP_INFO_DATA,
     RCP_PARAMETER_DATA,
     RCP_STRINGLIST,
+    RCP_VECTOR2_F32
 } rcp_option_data_type;
 
 typedef enum rcp_option_flags
@@ -83,6 +85,8 @@ union rcp_option_value
     rcp_infodata* info_data;
     rcp_parameter* parameter_data;
     rcp_stringlist* string_list;
+    // vector
+    rcp_vector2* vector2;
     // widget data
 };
 
@@ -231,6 +235,19 @@ static void _copy_option_data(rcp_option* dst, rcp_option* src)
         else
         {
             RCP_ERROR("could not malloc option data!\n");
+        }
+    }
+    else if (src->data_type == RCP_VECTOR2_F32)
+    {
+        dst->data.vector2 = rcp_vector2_create();
+
+        if (dst->data.vector2 != NULL)
+        {
+            memcpy(dst->data.vector2, src->data.vector2, 2 * sizeof(float));
+
+            dst->data_size = 2 * sizeof(float);
+            dst->flags |= RCP_FLAG_OWNS_PTR_DATA;
+            RCP_OPTION_SET_CHANGED(dst);
         }
     }
     else
@@ -393,6 +410,10 @@ void rcp_option_free_data(rcp_option* opt)
             {
                 rcp_stringlist_free(opt->data.string_list);
             }
+            else if (opt->data_type == RCP_VECTOR2_F32)
+            {
+                rcp_vector2_free(opt->data.vector2);
+            }
         }
 
         opt->data.data = NULL;
@@ -498,6 +519,10 @@ size_t rcp_option_write_value(rcp_option* opt, char* data, size_t size)
         else if (opt->data_type == RCP_LONG_STRING)
         {
             return rcp_write_long_string(data, size, opt->data.str);
+        }
+        else if (opt->data_type == RCP_VECTOR2_F32)
+        {
+            return rcp_vector2_write(opt->data.vector2, data, size);
         }
         else if (opt->data_type == RCP_PTR)
         {
@@ -674,6 +699,40 @@ bool rcp_option_set_f64(rcp_option* opt, double value)
     RCP_OPTION_SET_CHANGED(opt);
     return true;
 }
+
+
+// vector
+bool rcp_option_set_vector2f(rcp_option* opt, float x, float y)
+{
+    if (opt == NULL) return false;
+
+    if (opt->data_type == RCP_VECTOR2_F32 &&
+        rcp_vector2_get_f_x(opt->data.vector2) == x &&
+        rcp_vector2_get_f_y(opt->data.vector2) == y)
+    {
+        RCP_OPTION_UNSET_CHANGED(opt);
+        return false;
+    }
+
+    if (opt->data_type != RCP_VECTOR2_F32)
+    {
+        rcp_option_free_data(opt);
+    }
+
+    if (opt->data.vector2 == NULL)
+    {
+        // create vector
+        opt->data.vector2 = rcp_vector2_create();
+        opt->flags |= RCP_FLAG_OWNS_PTR_DATA;
+        opt->data_size = 2*sizeof(float);
+    }
+
+    rcp_vector2_set_f(opt->data.vector2, x, y);
+    opt->data_type = RCP_VECTOR2_F32;
+    RCP_OPTION_SET_CHANGED(opt);
+    return true;
+}
+
 
 // set external data
 bool rcp_option_set_data(rcp_option* opt, void* data, size_t size)
@@ -1023,6 +1082,24 @@ double rcp_option_get_double(rcp_option* opt)
     return opt->data.d;
 }
 
+// vector
+float rcp_option_get_vector2f_x(rcp_option* opt)
+{
+    if (opt == NULL) return 0.;
+    if (opt->data_type != RCP_VECTOR2_F32) return 0.;
+
+    return rcp_vector2_get_f_x(opt->data.vector2);
+}
+
+float rcp_option_get_vector2f_y(rcp_option* opt)
+{
+    if (opt == NULL) return 0.;
+    if (opt->data_type != RCP_VECTOR2_F32) return 0.;
+
+    return rcp_vector2_get_f_y(opt->data.vector2);
+}
+
+
 void rcp_option_get_data(rcp_option* opt, void** out_data, size_t* out_size)
 {
     if (opt == NULL) return;
@@ -1290,6 +1367,9 @@ void rcp_option_log(rcp_option* opt, const char* prefix_str, bool isunsigned)
     case RCP_STRINGLIST:
         RCP_INFO("\toption: 0x%02x - %s:\n", opt->prefix, prefix_str != NULL ? prefix_str : "");
         rcp_stringlist_log(opt->data.string_list);
+        break;
+    case RCP_VECTOR2_F32:
+        RCP_INFO("\toption: 0x%02x - %s: %f,%f\n", opt->prefix, prefix_str != NULL ? prefix_str : "", rcp_vector2_get_f_x(opt->data.vector2), rcp_vector2_get_f_y(opt->data.vector2));
         break;
     case RCP_PTR:
     default:

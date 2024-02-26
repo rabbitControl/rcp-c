@@ -188,6 +188,8 @@ static rcp_parameter* _create_parameter_from_data(char** data, size_t* size)
                     return RCP_PARAMETER(rcp_u32_parameter_create(parameter_id));
                 case DATATYPE_FLOAT32:
                     return RCP_PARAMETER(rcp_f32_parameter_create(parameter_id));
+                case DATATYPE_VECTOR2F32:
+                    return RCP_PARAMETER(rcp_vector2f32_parameter_create(parameter_id));
                 case DATATYPE_STRING:
                     return RCP_PARAMETER(rcp_string_parameter_create(parameter_id));
                 case DATATYPE_ENUM:

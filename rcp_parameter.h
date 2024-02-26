@@ -43,6 +43,7 @@ extern "C"{
 // create parameter
 rcp_group_parameter* rcp_group_parameter_create(int16_t id);
 rcp_value_parameter* rcp_bool_parameter_create(int16_t id);
+
 rcp_value_parameter* rcp_i8_parameter_create(int16_t id);
 rcp_value_parameter* rcp_u8_parameter_create(int16_t id);
 rcp_value_parameter* rcp_i16_parameter_create(int16_t id);
@@ -50,9 +51,15 @@ rcp_value_parameter* rcp_u16_parameter_create(int16_t id);
 rcp_value_parameter* rcp_i32_parameter_create(int16_t id);
 rcp_value_parameter* rcp_u32_parameter_create(int16_t id);
 rcp_value_parameter* rcp_f32_parameter_create(int16_t id);
+
+rcp_value_parameter* rcp_vector2f32_parameter_create(int16_t id);
+
 rcp_value_parameter* rcp_string_parameter_create(int16_t id);
 rcp_value_parameter* rcp_enum_parameter_create(int16_t id);
+
 rcp_bang_parameter* rcp_bang_parameter_create(int16_t id);
+
+
 
 // free
 void rcp_parameter_free(rcp_parameter* param);
@@ -131,6 +138,18 @@ float rcp_parameter_get_default_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_min_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_max_float(rcp_value_parameter* parameter);
 float rcp_parameter_get_multipleof_float(rcp_value_parameter* parameter);
+
+
+// vector
+// vector2 float
+void rcp_parameter_set_value_vector2f32(rcp_value_parameter* parameter, float x, float y);
+void rcp_parameter_set_default_vector2f32(rcp_value_parameter* parameter, float x, float y);
+void rcp_parameter_set_min_vector2f32(rcp_value_parameter* parameter, float x, float y);
+void rcp_parameter_set_max_vector2f32(rcp_value_parameter* parameter, float x, float y);
+void rcp_parameter_set_multipleof_vector2f32(rcp_value_parameter* parameter, float x, float y);
+float rcp_parameter_get_value_vector2f32_x(rcp_value_parameter* parameter);
+float rcp_parameter_get_value_vector2f32_y(rcp_value_parameter* parameter);
+
 
 // string
 void rcp_parameter_set_value_string(rcp_value_parameter* parameter, const char* value);

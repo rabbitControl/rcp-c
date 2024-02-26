@@ -157,6 +157,15 @@ rcp_value_parameter* rcp_f32_parameter_create(int16_t id)
     return _create_value_parameter(id, DATATYPE_FLOAT32);
 }
 
+
+// vector
+rcp_value_parameter* rcp_vector2f32_parameter_create(int16_t id)
+{
+    return _create_value_parameter(id, DATATYPE_VECTOR2F32);
+}
+
+
+
 rcp_value_parameter* rcp_string_parameter_create(int16_t id)
 {
     return _create_value_parameter(id, DATATYPE_STRING);
@@ -1296,6 +1305,116 @@ float rcp_parameter_get_multipleof_float(rcp_value_parameter* parameter)
     return _get_typdefinition_option_f32(parameter, NUMBER_OPTIONS_MULTIPLEOF, 0);
 }
 
+
+
+
+// vector
+
+// float
+static void _set_typedefinition_option_v2f32(rcp_value_parameter* parameter, char prefix, float x, float y)
+{
+    if (parameter == NULL) return;
+    if (RCP_PARAMETER(parameter)->typedefinition == NULL) return;
+
+    // check if parameter is of corrent type
+    if (RCP_IS_TYPE(parameter, DATATYPE_VECTOR2F32))
+    {
+        if (rcp_typedefinition_set_option_v2f32(RCP_PARAMETER(parameter)->typedefinition, prefix, x, y))
+        {
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+    else
+    {
+        // error!
+    }
+}
+
+static float _get_typdefinition_option_v2f32_x(rcp_value_parameter* parameter, char prefix, float defaultValue)
+{
+    if (parameter == NULL) return defaultValue;
+
+    return rcp_typedefinition_get_option_v2f32_x(RCP_PARAMETER(parameter)->typedefinition, prefix, defaultValue);
+}
+
+static float _get_typdefinition_option_v2f32_y(rcp_value_parameter* parameter, char prefix, float defaultValue)
+{
+    if (parameter == NULL) return defaultValue;
+
+    return rcp_typedefinition_get_option_v2f32_y(RCP_PARAMETER(parameter)->typedefinition, prefix, defaultValue);
+}
+
+// vector2 float
+void rcp_parameter_set_value_vector2f32(rcp_value_parameter* parameter, float x, float y)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of corrent type
+    if (validate_value_parameter(parameter, DATATYPE_VECTOR2F32, DATATYPE_INVALID))
+    {
+        if (rcp_option_set_vector2f(parameter->value_option, x, y))
+        {
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+}
+
+float rcp_parameter_get_value_vector2f32_x(rcp_value_parameter* parameter)
+{
+    if (parameter == NULL) return 0;
+
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_VECTOR2F32)
+    {
+        // error
+        RCP_ERROR("value parameter of wrong type!\n");
+        return 0;
+    }
+
+    return rcp_option_get_vector2f_x(parameter->value_option);
+}
+
+float rcp_parameter_get_value_vector2f32_y(rcp_value_parameter* parameter)
+{
+    if (parameter == NULL) return 0;
+
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_VECTOR2F32)
+    {
+        // error
+        RCP_ERROR("value parameter of wrong type!\n");
+        return 0;
+    }
+
+    return rcp_option_get_vector2f_y(parameter->value_option);
+}
+
+
+// vector options
+void rcp_parameter_set_default_vector2f32(rcp_value_parameter* parameter, float x, float y)
+{
+    _set_typedefinition_option_v2f32(parameter, NUMBER_OPTIONS_DEFAULT, x, y);
+}
+
+void rcp_parameter_set_min_vector2f32(rcp_value_parameter* parameter, float x, float y)
+{
+    _set_typedefinition_option_v2f32(parameter, NUMBER_OPTIONS_MINIMUM, x, y);
+}
+
+void rcp_parameter_set_max_vector2f32(rcp_value_parameter* parameter, float x, float y)
+{
+    _set_typedefinition_option_v2f32(parameter, NUMBER_OPTIONS_MAXIMUM, x, y);
+}
+
+void rcp_parameter_set_multipleof_vector2f32(rcp_value_parameter* parameter, float x, float y)
+{
+    _set_typedefinition_option_v2f32(parameter, NUMBER_OPTIONS_MULTIPLEOF, x, y);
+}
+
+
+
+
+
 //------------------------
 // string parameter
 void rcp_parameter_set_value_string(rcp_value_parameter* parameter, const char* value)
@@ -1524,6 +1643,12 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
         case DATATYPE_UINT64:
         case DATATYPE_FLOAT32:
         case DATATYPE_FLOAT64:
+        case DATATYPE_VECTOR2F32:
+        case DATATYPE_VECTOR2I32:
+        case DATATYPE_VECTOR3F32:
+        case DATATYPE_VECTOR3I32:
+        case DATATYPE_VECTOR4F32:
+        case DATATYPE_VECTOR4I32:
         case DATATYPE_RGB:
         {
             data = rcp_typedefinition_parse_number_value(parameter->typedefinition, data, size, opt);
@@ -1919,6 +2044,18 @@ void rcp_parameter_log(rcp_parameter* parameter)
                     RCP_INFO_ONLY("%f\n", rcp_option_get_double(opt));
                     break;
 
+                case DATATYPE_VECTOR2F32:
+                    RCP_INFO_ONLY("%f,%f\n", rcp_option_get_vector2f_x(opt), rcp_option_get_vector2f_y(opt));
+                    break;
+
+                case DATATYPE_VECTOR2I32:
+                case DATATYPE_VECTOR3F32:
+                case DATATYPE_VECTOR3I32:
+                case DATATYPE_VECTOR4F32:
+                case DATATYPE_VECTOR4I32:
+                    // TODO
+                    break;
+
                 case DATATYPE_STRING:
                     RCP_INFO_ONLY("%s\n", rcp_option_get_string(opt, LONG_STRING));
                     break;
@@ -2250,15 +2387,21 @@ bool rcp_parameter_is_group(rcp_parameter* parameter)
 bool rcp_parameter_is_number(rcp_parameter* parameter)
 {
     return RCP_IS_TYPE(parameter, DATATYPE_INT8) ||
-            RCP_IS_TYPE(parameter, DATATYPE_UINT8) ||
-            RCP_IS_TYPE(parameter, DATATYPE_INT16) ||
-            RCP_IS_TYPE(parameter, DATATYPE_UINT16) ||
-            RCP_IS_TYPE(parameter, DATATYPE_INT32) ||
-            RCP_IS_TYPE(parameter, DATATYPE_UINT32) ||
-            RCP_IS_TYPE(parameter, DATATYPE_INT64) ||
-            RCP_IS_TYPE(parameter, DATATYPE_UINT64) ||
-            RCP_IS_TYPE(parameter, DATATYPE_FLOAT32) ||
-            RCP_IS_TYPE(parameter, DATATYPE_FLOAT64);
+           RCP_IS_TYPE(parameter, DATATYPE_UINT8) ||
+           RCP_IS_TYPE(parameter, DATATYPE_INT16) ||
+           RCP_IS_TYPE(parameter, DATATYPE_UINT16) ||
+           RCP_IS_TYPE(parameter, DATATYPE_INT32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_UINT32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_INT64) ||
+           RCP_IS_TYPE(parameter, DATATYPE_UINT64) ||
+           RCP_IS_TYPE(parameter, DATATYPE_FLOAT32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_FLOAT64) ||
+           RCP_IS_TYPE(parameter, DATATYPE_VECTOR2F32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_VECTOR2I32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_VECTOR3F32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_VECTOR3I32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_VECTOR4F32) ||
+           RCP_IS_TYPE(parameter, DATATYPE_VECTOR4I32);
 }
 
 bool rcp_parameter_only_value_changed(rcp_parameter* parameter)

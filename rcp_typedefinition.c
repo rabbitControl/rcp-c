@@ -137,6 +137,15 @@ bool rcp_typedefinition_set_option_f32(rcp_typedefinition* typedefinition, char 
 	return rcp_option_set_f32(opt, value);
 }
 
+
+bool rcp_typedefinition_set_option_v2f32(rcp_typedefinition* typedefinition, char prefix, float x, float y)
+{
+    if (typedefinition == NULL) return false;
+    rcp_option* opt = rcp_option_get_create(&typedefinition->options, prefix);
+    return rcp_option_set_vector2f(opt, x, y);
+}
+
+
 bool rcp_typedefinition_set_option_string_tiny(rcp_typedefinition* typedefinition, char prefix, const char* value)
 {
     if (typedefinition == NULL) return false;
@@ -225,6 +234,36 @@ float rcp_typedefinition_get_option_f32(rcp_typedefinition* typedefinition, char
 
     return defaultValue;
 }
+
+
+float rcp_typedefinition_get_option_v2f32_x(rcp_typedefinition* typedefinition, char prefix, float defaultValue)
+{
+    if (typedefinition != NULL)
+    {
+        rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
+        if (opt != NULL)
+        {
+            return rcp_option_get_vector2f_x(opt);
+        }
+    }
+
+    return defaultValue;
+}
+
+float rcp_typedefinition_get_option_v2f32_y(rcp_typedefinition* typedefinition, char prefix, float defaultValue)
+{
+    if (typedefinition != NULL)
+    {
+        rcp_option* opt = rcp_option_get(typedefinition->options, prefix);
+        if (opt != NULL)
+        {
+            return rcp_option_get_vector2f_y(opt);
+        }
+    }
+
+    return defaultValue;
+}
+
 
 // no transfer
 const char* rcp_typedefinition_get_option_string_tiny(rcp_typedefinition* typedefinition, char prefix)
@@ -352,6 +391,30 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
 		rcp_option_set_f64(opt, val);
 		return data;
 	}
+
+    case DATATYPE_VECTOR2F32:
+    {
+        rcp_option_free_data(opt);
+        float x, y;
+
+        data = rcp_read_f32(data, size, &x);
+        if (data == NULL) return NULL;
+
+        data = rcp_read_f32(data, size, &y);
+        if (data == NULL) return NULL;
+
+        rcp_option_set_vector2f(opt, x, y);
+        return data;
+    }
+
+    case DATATYPE_VECTOR2I32:
+    case DATATYPE_VECTOR3F32:
+    case DATATYPE_VECTOR3I32:
+    case DATATYPE_VECTOR4F32:
+    case DATATYPE_VECTOR4I32:
+        // TODO
+        break;
+
     }
 
     RCP_TYPEDEFINITION_DEBUG("wrong type or not implemented: did not read value!");
@@ -608,6 +671,12 @@ char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, 
         case DATATYPE_UINT64:
 		case DATATYPE_FLOAT32:
         case DATATYPE_FLOAT64:
+        case DATATYPE_VECTOR2F32:
+        case DATATYPE_VECTOR2I32:
+        case DATATYPE_VECTOR3F32:
+        case DATATYPE_VECTOR3I32:
+        case DATATYPE_VECTOR4F32:
+        case DATATYPE_VECTOR4I32:
             // handle number option
             data = parse_number_type_option(typedefinition, data, size, option_prefix);
             break;
@@ -889,6 +958,12 @@ void rcp_typedefinition_log(rcp_typedefinition* typedefinition)
             case DATATYPE_UINT64:
             case DATATYPE_FLOAT32:
             case DATATYPE_FLOAT64:
+            case DATATYPE_VECTOR2F32:
+            case DATATYPE_VECTOR2I32:
+            case DATATYPE_VECTOR3F32:
+            case DATATYPE_VECTOR3I32:
+            case DATATYPE_VECTOR4F32:
+            case DATATYPE_VECTOR4I32:
                 log_number_option(opt, typedefinition->type_id);
                 break;
 

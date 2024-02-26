@@ -65,6 +65,10 @@ bool rcp_option_set_data(rcp_option* opt, void* data, size_t size); // no transf
 bool rcp_option_copy_data(rcp_option* opt, void* data, size_t size); // copy data, takes ownership
 // todo: rcp_option_move_data?
 
+// vector
+bool rcp_option_set_vector2f(rcp_option* opt, float x, float y);
+
+
 bool rcp_option_get_bool(rcp_option* opt);
 int8_t rcp_option_get_i8(rcp_option* opt);
 int16_t rcp_option_get_i16(rcp_option* opt);
@@ -74,6 +78,10 @@ uint64_t rcp_option_get_u64(rcp_option* opt);
 float rcp_option_get_float(rcp_option* opt);
 double rcp_option_get_double(rcp_option* opt);
 void rcp_option_get_data(rcp_option* opt, void** out_data, size_t* out_size); // no transfer
+
+// vector
+float rcp_option_get_vector2f_x(rcp_option* opt);
+float rcp_option_get_vector2f_y(rcp_option* opt);
 
 // string
 bool rcp_option_move_string(rcp_option* opt, char* data, rcp_string_types type); // full transfer

@@ -63,14 +63,25 @@ bool rcp_typedefinition_set_option_i8(rcp_typedefinition* typedefinition, char p
 bool rcp_typedefinition_set_option_i16(rcp_typedefinition* typedefinition, char prefix, int16_t value);
 bool rcp_typedefinition_set_option_i32(rcp_typedefinition* typedefinition, char prefix, int32_t value);
 bool rcp_typedefinition_set_option_f32(rcp_typedefinition* typedefinition, char prefix, float value);
+
+bool rcp_typedefinition_set_option_v2f32(rcp_typedefinition* typedefinition, char prefix, float x, float y);
+
 bool rcp_typedefinition_set_option_string_tiny(rcp_typedefinition* typedefinition, char prefix, const char* value); // copy
 bool rcp_typedefinition_set_option_stringlist(rcp_typedefinition* typedefinition, char prefix, int count, va_list args); // copy
+
+
 
 bool rcp_typedefinition_get_option_bool(rcp_typedefinition* typedefinition, char prefix, bool defaultValue);
 int8_t rcp_typedefinition_get_option_i8(rcp_typedefinition* typedefinition, char prefix, int8_t defaultValue);
 int16_t rcp_typedefinition_get_option_i16(rcp_typedefinition* typedefinition, char prefix, int16_t defaultValue);
 int32_t rcp_typedefinition_get_option_i32(rcp_typedefinition* typedefinition, char prefix, int32_t defaultValue);
 float rcp_typedefinition_get_option_f32(rcp_typedefinition* typedefinition, char prefix, float defaultValue);
+
+float rcp_typedefinition_get_option_v2f32_x(rcp_typedefinition* typedefinition, char prefix, float defaultValue);
+float rcp_typedefinition_get_option_v2f32_y(rcp_typedefinition* typedefinition, char prefix, float defaultValue);
+
+
+
 const char* rcp_typedefinition_get_option_string_tiny(rcp_typedefinition* typedefinition, char prefix); // no transfer
 rcp_stringlist* rcp_typedefinition_get_option_stringlist(rcp_typedefinition* typedefinition, char prefix); // no transfer
 
