@@ -1,4 +1,4 @@
-    /*
+/*
 ********************************************************************
 * rabbitcontrol - a protocol and data-format for remote control.
 *

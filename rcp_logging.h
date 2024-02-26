@@ -26,7 +26,7 @@ extern "C"{
 //#define RCP_LOG_INFO
 
 // debug logging
-// per module logging set in implementatin files
+// per module logging set in implementation files
 // RCP_LOG_DEBUG needs to be turned on for module logging
 //#define RCP_LOG_DEBUG
 // or debug_log all

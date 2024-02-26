@@ -516,7 +516,7 @@ size_t rcp_option_write_value(rcp_option* opt, char* data, size_t size)
 //            PARAMETER_DATA
 //            STRINGLIST
 
-            RCP_OPTION_DEBUG("not handled!\n");
+            RCP_OPTION_DEBUG("not handled option: %d\n", opt->prefix);
             return 0;
         }
 

@@ -1545,7 +1545,7 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
 
 //        case DATATYPE_RANGE:
         default:
-            RCP_PARAMETER_DEBUG("datatype not implements\n");
+            RCP_PARAMETER_DEBUG("datatype not implemented\n");
             break;
         }
 
