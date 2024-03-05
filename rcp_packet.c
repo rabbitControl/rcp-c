@@ -548,7 +548,7 @@ size_t rcp_packet_write_buf(rcp_packet* packet, char* data, size_t size, bool al
         if (all || rcp_option_is_changed(opt))
         {
             written_len = rcp_option_write(opt, data, size - written, all);
-            RCP_INFO("packet options - written len: %d\n", written_len);
+            RCP_PACKET_DEBUG("packet options - written len: %d\n", written_len);
             if (written_len == 0)
             {
                 return 0;
