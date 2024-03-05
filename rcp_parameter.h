@@ -233,6 +233,9 @@ void rcp_parameter_set_userdata(rcp_parameter* parameter, void* data, size_t siz
 void rcp_parameter_copy_userdata(rcp_parameter* parameter, void* data, size_t size);
 void rcp_parameter_get_userdata(rcp_parameter* parameter, void** out_data, size_t* out_size);
 
+// userid
+void rcp_parameter_set_userid(rcp_parameter* parameter, const char* userid);
+const char* rcp_parameter_get_userid(rcp_parameter* parameter);
 
 // parsing
 char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* size);

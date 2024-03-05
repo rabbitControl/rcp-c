@@ -766,38 +766,35 @@ void rcp_parameter_get_userdata(rcp_parameter* parameter, void** out_data, size_
 }
 
 
-/*
- * TAGS
- *
- *
- *
- */
-void rcp_parameter_set_tags(rcp_parameter* parameter, const char* tags)
+static inline void _parameter_set_string_option(rcp_parameter* parameter,
+                                                const char* string,
+                                                rcp_parameter_options option)
 {
     if (parameter == NULL) return;
 
-    RCP_PARAMETER_DEBUG("parameter_set_tags\n");
+    RCP_PARAMETER_DEBUG("parameter_set string option type: %d\n", option);
 
     // check if we have that option
-    rcp_option* opt = rcp_option_get_create(&parameter->options, PARAMETER_OPTIONS_TAGS);
+    rcp_option* opt = rcp_option_get_create(&parameter->options, option);
 
-    RCP_PARAMETER_DEBUG("parameter_set_tags: %p\n", opt);
+    RCP_PARAMETER_DEBUG("parameter_set string option: %p\n", opt);
 
     rcp_option_free_data(opt);
 
     // set data
-    if (rcp_option_copy_string(opt, tags, TINY_STRING))
+    if (rcp_option_copy_string(opt, string, TINY_STRING))
     {
         rcp_manager_set_dirty(parameter->manager, parameter);
     }
 }
 
-const char* rcp_parameter_get_tags(rcp_parameter* parameter)
+static inline const char* _parameter_get_string_option(rcp_parameter* parameter,
+                                                       rcp_parameter_options option)
 {
     if (parameter == NULL) return NULL;
 
     // check if we have that option
-    rcp_option* opt = rcp_option_get(parameter->options, PARAMETER_OPTIONS_TAGS);
+    rcp_option* opt = rcp_option_get(parameter->options, option);
 
     if (opt)
     {
@@ -806,6 +803,40 @@ const char* rcp_parameter_get_tags(rcp_parameter* parameter)
 
     // default
     return NULL;
+}
+
+
+/*
+ * USERID
+ *
+ *
+ *
+ */
+void rcp_parameter_set_userid(rcp_parameter* parameter, const char* userid)
+{
+    _parameter_set_string_option(parameter, userid, PARAMETER_OPTIONS_USERID);
+}
+
+const char* rcp_parameter_get_userid(rcp_parameter* parameter)
+{
+    return _parameter_get_string_option(parameter, PARAMETER_OPTIONS_USERID);
+}
+
+
+/*
+ * TAGS
+ *
+ *
+ *
+ */
+void rcp_parameter_set_tags(rcp_parameter* parameter, const char* tags)
+{
+    _parameter_set_string_option(parameter, tags, PARAMETER_OPTIONS_TAGS);
+}
+
+const char* rcp_parameter_get_tags(rcp_parameter* parameter)
+{
+    return _parameter_get_string_option(parameter, PARAMETER_OPTIONS_TAGS);
 }
 
 /*
@@ -2081,10 +2112,8 @@ void rcp_parameter_log(rcp_parameter* parameter)
                 break;
 
             case PARAMETER_OPTIONS_TAGS:
-            {
                 RCP_INFO_ONLY("TAGS: %s\n", rcp_option_get_string(opt, TINY_STRING));
                 break;
-            }
 
             case PARAMETER_OPTIONS_ORDER:
                 RCP_INFO_ONLY("ORDER: %d\n", rcp_option_get_i32(opt));
@@ -2119,9 +2148,12 @@ void rcp_parameter_log(rcp_parameter* parameter)
                 break;
             }
 
+            case PARAMETER_OPTIONS_USERID:
+                RCP_INFO_ONLY("USERID: %s\n", rcp_option_get_string(opt, TINY_STRING));
+                break;
 
             default:
-                RCP_INFO_ONLY("\n");
+                RCP_INFO_ONLY("(not handled)\n");
                 break;
             }
 
