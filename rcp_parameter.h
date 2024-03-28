@@ -56,6 +56,7 @@ rcp_value_parameter* rcp_vector2f32_parameter_create(int16_t id);
 
 rcp_value_parameter* rcp_string_parameter_create(int16_t id);
 rcp_value_parameter* rcp_enum_parameter_create(int16_t id);
+rcp_value_parameter* rcp_ipv4_parameter_create(int16_t id);
 
 rcp_bang_parameter* rcp_bang_parameter_create(int16_t id);
 
@@ -199,6 +200,13 @@ const char* rcp_parameter_get_value_enum(rcp_value_parameter* parameter);
 const char* rcp_parameter_get_default_enum(rcp_value_parameter* parameter);
 bool rcp_parameter_get_multiselect_enum(rcp_value_parameter* parameter);
 
+
+//-------------------
+// ipv4
+void rcp_parameter_set_value_ipv4(rcp_value_parameter* parameter, uint32_t value);
+void rcp_parameter_set_default_ipv4(rcp_value_parameter* parameter, uint32_t value);
+uint32_t rcp_parameter_get_value_ipv4(rcp_value_parameter* parameter);
+uint32_t rcp_parameter_get_default_ipv4(rcp_value_parameter* parameter);
 
 //-------------------
 // parameter options

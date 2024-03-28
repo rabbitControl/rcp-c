@@ -198,6 +198,8 @@ static rcp_parameter* _create_parameter_from_data(char** data, size_t* size)
                     return RCP_PARAMETER(rcp_bang_parameter_create(parameter_id));
                 case DATATYPE_GROUP:
                     return RCP_PARAMETER(rcp_group_parameter_create(parameter_id));
+                case DATATYPE_IPV4:
+                    return RCP_PARAMETER(rcp_ipv4_parameter_create(parameter_id));
 
                 default:
                 RCP_DEBUG("type id not implemented: %d\n", datatype_id);

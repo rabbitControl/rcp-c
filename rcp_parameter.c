@@ -176,6 +176,11 @@ rcp_value_parameter* rcp_enum_parameter_create(int16_t id)
     return _create_value_parameter(id, DATATYPE_ENUM);
 }
 
+rcp_value_parameter* rcp_ipv4_parameter_create(int16_t id)
+{
+    return _create_value_parameter(id, DATATYPE_IPV4);
+}
+
 rcp_bang_parameter* rcp_bang_parameter_create(int16_t id)
 {
     if (id == 0) return NULL;
@@ -1337,6 +1342,46 @@ float rcp_parameter_get_multipleof_float(rcp_value_parameter* parameter)
 }
 
 
+// IPV4
+
+void rcp_parameter_set_value_ipv4(rcp_value_parameter* parameter, uint32_t value)
+{
+    if (parameter == NULL) return;
+
+    // check if parameter is of corrent type
+    if (validate_value_parameter(parameter, DATATYPE_IPV4, DATATYPE_INVALID))
+    {
+        if (rcp_option_set_i32(parameter->value_option, value))
+        {
+            rcp_manager_set_dirty(RCP_PARAMETER(parameter)->manager, RCP_PARAMETER(parameter));
+        }
+    }
+}
+
+uint32_t rcp_parameter_get_value_ipv4(rcp_value_parameter* parameter)
+{
+    if (parameter == NULL) return 0;
+
+    // check if parameter is of correct type
+    if (rcp_typedefinition_get_type_id(parameter->parameter_base.typedefinition) != DATATYPE_IPV4)
+    {
+        // error
+        RCP_ERROR("value parameter of wrong type!\n");
+        return 0;
+    }
+
+    return rcp_option_get_i32(parameter->value_option);
+}
+
+void rcp_parameter_set_default_ipv4(rcp_value_parameter* parameter, uint32_t value)
+{
+    _set_typdefinition_option_int32(parameter, IPV4_OPTIONS_DEFAULT, value);
+}
+
+uint32_t rcp_parameter_get_default_ipv4(rcp_value_parameter* parameter)
+{
+    return _get_typdefinition_option_int32(parameter, IPV4_OPTIONS_DEFAULT, 0);
+}
 
 
 // vector
@@ -1681,6 +1726,7 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
         case DATATYPE_VECTOR4F32:
         case DATATYPE_VECTOR4I32:
         case DATATYPE_RGB:
+        case DATATYPE_IPV4:
         {
             data = rcp_typedefinition_parse_number_value(parameter->typedefinition, data, size, opt);
             if (data == NULL) return NULL;
@@ -2093,6 +2139,13 @@ void rcp_parameter_log(rcp_parameter* parameter)
 
                 case DATATYPE_ENUM:
                     RCP_INFO_ONLY("%s\n", rcp_option_get_string(opt, TINY_STRING));
+                    break;
+
+                case DATATYPE_IPV4:
+                {
+                    uint32_t v = rcp_option_get_i32(opt);
+                    RCP_INFO_ONLY("%d.%d.%d.%d\n", ((v >> 24) & 0xFF), ((v >> 16) & 0xFF), ((v >> 8) & 0xFF), ((v >> 0) & 0xFF));
+                }
                     break;
 
                 default:

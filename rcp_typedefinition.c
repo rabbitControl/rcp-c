@@ -348,6 +348,7 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
     case DATATYPE_INT32:
     case DATATYPE_UINT32:
     case DATATYPE_RGB:
+    case DATATYPE_IPV4:
     {
         rcp_option_free_data(opt);
         int32_t val;
@@ -616,6 +617,23 @@ static char* parse_bool_type_option(rcp_typedefinition* typedefinition, char* da
     return NULL;
 }
 
+static char* parse_ipv4_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, uint8_t option)
+{
+    if (typedefinition == NULL) return NULL;
+
+    RCP_TYPEDEFINITION_DEBUG("parse_ipv4_type_option: %d\n", option);
+
+    rcp_option* opt;
+
+    if (option == IPV4_OPTIONS_DEFAULT)
+    {
+        opt = rcp_option_get_create(&typedefinition->options, IPV4_OPTIONS_DEFAULT);
+        return rcp_typedefinition_parse_number_value(typedefinition, data, size, opt);
+    }
+
+    return NULL;
+}
+
 char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, char* data, size_t* size)
 {
     if (typedefinition == NULL) return NULL;
@@ -692,6 +710,10 @@ char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, 
         case DATATYPE_BANG:
         case DATATYPE_GROUP:
             // no options for this datatype
+            break;
+
+        case DATATYPE_IPV4:
+            data = parse_ipv4_type_option(typedefinition, data, size, option_prefix);
             break;
         }
     }
@@ -987,6 +1009,13 @@ void rcp_typedefinition_log(rcp_typedefinition* typedefinition)
 
             case DATATYPE_GROUP:
                 RCP_INFO("\toption: 0x%02x\n", rcp_option_get_prefix(opt));
+                break;
+
+            case DATATYPE_IPV4:
+            {
+                uint32_t v = rcp_option_get_i32(opt);
+                RCP_INFO("\toption: 0x%02x - %d.%d.%d.%d\n", rcp_option_get_prefix(opt), ((v >> 24) & 0xFF), ((v >> 16) & 0xFF), ((v >> 8) & 0xFF), ((v >> 0) & 0xFF));
+            }
                 break;
 
             default:
