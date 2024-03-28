@@ -499,7 +499,7 @@ static char* rcp_typedefinition_parse_stringlist_value(rcp_typedefinition* typed
 }
 
 
-// return offset
+// return data
 char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_number_options number_option)
 {
     if (typedefinition == NULL) return NULL;
@@ -541,7 +541,7 @@ char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, s
         return rcp_read_tiny_string_option(&typedefinition->options, data, size, NUMBER_OPTIONS_UNIT);
     }
 
-    return 0;
+    return NULL;
 }
 
 
@@ -564,7 +564,7 @@ char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, s
         return rcp_typedefinition_parse_string_value(typedefinition, data, size, opt);
     }
 
-    return 0;
+    return NULL;
 }
 
 char* parse_enum_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_enum_options option)
@@ -596,7 +596,7 @@ char* parse_enum_type_option(rcp_typedefinition* typedefinition, char* data, siz
         return rcp_typedefinition_parse_stringlist_value(typedefinition, data, size, opt);
     }
 
-    return 0;
+    return NULL;
 }
 
 static char* parse_bool_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, uint8_t option)
@@ -613,13 +613,12 @@ static char* parse_bool_type_option(rcp_typedefinition* typedefinition, char* da
         return rcp_typedefinition_parse_number_value(typedefinition, data, size, opt);
     }
 
-    return 0;
+    return NULL;
 }
 
 char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, char* data, size_t* size)
 {
     if (typedefinition == NULL) return NULL;
-    if (data == NULL || *size == 0) return NULL;
 
     if (typedefinition->type_id == 0
             || typedefinition->type_id >= DATATYPE_MAX_)
@@ -630,10 +629,10 @@ char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, 
     }
 
 
-
     uint8_t option_prefix = 0;
 
-    while (*size > 0)
+    while (data != NULL &&
+           *size > 0)
     {
         // reset
         option_prefix = 0;
