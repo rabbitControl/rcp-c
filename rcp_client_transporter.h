@@ -38,11 +38,12 @@ typedef struct rcp_client_transporter rcp_client_transporter;
 
 struct rcp_client_transporter
 {
-    void (*send)(rcp_client_transporter* transporter, char* data, size_t size);
+    void (*send)(rcp_client_transporter* transporter, const char* data, size_t size);
 
     // used internally by client:
     // received callback
-    void (*received)(rcp_client* client, char* data, size_t size);
+    void (*received)(rcp_client* client, const char* data, size_t size);
+
     // connected and disconnected callbacks
     void (*connected)(rcp_client* client);
     void (*disconnected)(rcp_client* client);
@@ -53,13 +54,13 @@ struct rcp_client_transporter
 
 
 rcp_client_transporter* rcp_client_transporter_setup(rcp_client_transporter* t,
-                                                     void (*send)(rcp_client_transporter* transporter, char* data, size_t size));
+                                                     void (*send)(rcp_client_transporter* transporter, const char* data, size_t size));
 
 // internally
 // callbacks
 void rcp_client_transporter_set_recv_cb(rcp_client_transporter* t,
                                         rcp_client* client,
-                                        void (*received)(rcp_client* client, char* data, size_t size));
+                                        void (*received)(rcp_client* client, const char* data, size_t size));
 
 void rcp_client_transporter_set_connected_cb(rcp_client_transporter* t,
                                              rcp_client* client,
@@ -70,7 +71,7 @@ void rcp_client_transporter_set_disconnected_cb(rcp_client_transporter* t,
                                                 void (*disconnected)(rcp_client* client));
 
 // call callbacks
-void rcp_client_transporter_call_recv_cb(rcp_client_transporter* t, char* data, size_t size);
+void rcp_client_transporter_call_recv_cb(rcp_client_transporter* t, const char* data, size_t size);
 void rcp_client_transporter_call_connected_cb(rcp_client_transporter* t);
 void rcp_client_transporter_call_disconnected_cb(rcp_client_transporter* t);
 

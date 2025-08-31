@@ -377,7 +377,7 @@ void rcp_typedefinition_get_option_data(rcp_typedefinition* typedefinition, char
 
 
 //
-char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_option* opt)
+const char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_option* opt)
 {
     if (typedefinition == NULL) return data;
 
@@ -502,7 +502,7 @@ char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, 
     return NULL;
 }
 
-char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_option* opt)
+const char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_option* opt)
 {
     if (typedefinition == NULL) return data;
 
@@ -535,7 +535,7 @@ char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, 
     return NULL;
 }
 
-static char* rcp_typedefinition_parse_stringlist_value(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_option* opt)
+static const char* rcp_typedefinition_parse_stringlist_value(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_option* opt)
 {
     if (typedefinition == NULL) return data;
 
@@ -581,7 +581,7 @@ static char* rcp_typedefinition_parse_stringlist_value(rcp_typedefinition* typed
 
 
 // return data
-char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_number_options number_option)
+const char* parse_number_type_option(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_number_options number_option)
 {
     if (typedefinition == NULL) return NULL;
 
@@ -612,7 +612,7 @@ char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, s
         opt = rcp_option_get_create(&typedefinition->options, NUMBER_OPTIONS_SCALE);
         rcp_option_free_data(opt);
         int8_t val;
-        char* t = rcp_read_i8(data, size, &val);
+        const char* t = rcp_read_i8(data, size, &val);
         if (t == NULL) return NULL;
 
         rcp_option_set_i8(opt, val);
@@ -626,7 +626,7 @@ char* parse_number_type_option(rcp_typedefinition* typedefinition, char* data, s
 }
 
 
-char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_string_options option)
+const char* parse_string_type_option(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_string_options option)
 {
     if (typedefinition == NULL) return NULL;
 
@@ -648,7 +648,7 @@ char* parse_string_type_option(rcp_typedefinition* typedefinition, char* data, s
     return NULL;
 }
 
-char* parse_enum_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_enum_options option)
+const char* parse_enum_type_option(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_enum_options option)
 {
     if (typedefinition == NULL) return NULL;
 
@@ -699,7 +699,7 @@ char* parse_enum_type_option(rcp_typedefinition* typedefinition, char* data, siz
     return NULL;
 }
 
-static char* parse_bool_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, uint8_t option)
+static const char* parse_bool_type_option(rcp_typedefinition* typedefinition, const char* data, size_t* size, uint8_t option)
 {
     if (typedefinition == NULL) return NULL;
 
@@ -716,7 +716,7 @@ static char* parse_bool_type_option(rcp_typedefinition* typedefinition, char* da
     return NULL;
 }
 
-static char* parse_ipv4_type_option(rcp_typedefinition* typedefinition, char* data, size_t* size, uint8_t option)
+static const char* parse_ipv4_type_option(rcp_typedefinition* typedefinition, const char* data, size_t* size, uint8_t option)
 {
     if (typedefinition == NULL) return NULL;
 
@@ -733,7 +733,7 @@ static char* parse_ipv4_type_option(rcp_typedefinition* typedefinition, char* da
     return NULL;
 }
 
-static char* parse_custom_type_option(rcp_typedefinition_custom* typedefinition, char* data, size_t* size, uint8_t option)
+static const char* parse_custom_type_option(rcp_typedefinition_custom* typedefinition, const char* data, size_t* size, uint8_t option)
 {
     if (typedefinition == NULL) return NULL;
 
@@ -809,7 +809,7 @@ static char* parse_custom_type_option(rcp_typedefinition_custom* typedefinition,
     return NULL;
 }
 
-char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, char* data, size_t* size)
+const char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, const char* data, size_t* size)
 {
     if (typedefinition == NULL) return NULL;
 

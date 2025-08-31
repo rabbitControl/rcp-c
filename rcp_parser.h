@@ -34,16 +34,16 @@ extern "C"{
 #include "rcp.h"
 #include "rcp_parameter_type.h"
 
-char* rcp_read_i8(char* data, size_t* size, int8_t* target);
-char* rcp_read_u8(char* data, size_t* size, uint8_t* target);
-char* rcp_read_i16(char* data, size_t* size, int16_t* target);
-char* rcp_read_i32(char* data, size_t* size, int32_t* target);
-char* rcp_read_i64(char* data, size_t* size, int64_t* target);
-char* rcp_read_f32(char* data, size_t* size, float* target);
-char* rcp_read_f64(char* data, size_t* size, double* target);
+const char* rcp_read_i8(const char* data, size_t* size, int8_t* target);
+const char* rcp_read_u8(const char* data, size_t* size, uint8_t* target);
+const char* rcp_read_i16(const char* data, size_t* size, int16_t* target);
+const char* rcp_read_i32(const char* data, size_t* size, int32_t* target);
+const char* rcp_read_i64(const char* data, size_t* size, int64_t* target);
+const char* rcp_read_f32(const char* data, size_t* size, float* target);
+const char* rcp_read_f64(const char* data, size_t* size, double* target);
 
-rcp_parameter* rcp_parse_parameter(char** data, size_t* size);
-rcp_parameter* rcp_parse_value_update(char** data, size_t* size);
+rcp_parameter* rcp_parse_parameter(const char** data, size_t* size);
+rcp_parameter* rcp_parse_value_update(const char** data, size_t* size);
 
 #ifdef __cplusplus
 } // extern "C"

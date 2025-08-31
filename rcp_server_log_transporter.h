@@ -45,14 +45,14 @@ rcp_server_log_transporter* rcp_server_log_transporter_create();
 void rcp_server_log_transporter_free(rcp_server_log_transporter* transporter);
 
 // push data in
-void rcp_server_log_transporter_push_data(rcp_server_log_transporter* transporter, char* data, size_t size);
+void rcp_server_log_transporter_push_data(rcp_server_log_transporter* transporter, const char* data, size_t size);
 
 // server transporter interface
 void rcp_server_log_transporter_bind(rcp_server_transporter* transporter);
 void rcp_server_log_transporter_unbind(rcp_server_transporter* transporter);
 
-void rcp_server_log_transporter_send_to_one(rcp_server_transporter* transporter, char* data, size_t size, void* id);
-void rcp_server_log_transporter_send_to_all(rcp_server_transporter* transporter, char* data, size_t size, void* excludeId);
+void rcp_server_log_transporter_send_to_one(rcp_server_transporter* transporter, const char* data, size_t size, void* id);
+void rcp_server_log_transporter_send_to_all(rcp_server_transporter* transporter, const char* data, size_t size, void* excludeId);
 int rcp_server_log_transporter_connection_count(rcp_server_transporter* transporter);
 
 

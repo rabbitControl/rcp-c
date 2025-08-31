@@ -76,12 +76,12 @@ rcp_group_parameter* rcp_server_find_group(rcp_server* server, const char* name,
 
 
 // called from manager on init, ...
-void rcp_server_manager_data_cb_one(void* server, char* data, size_t size, void* client);
+void rcp_server_manager_data_cb_one(void* server, const char* data, size_t size, void* client);
 // called from manager on parameter update
-void rcp_server_manager_data_cb_all(void* server, char* data, size_t size);
+void rcp_server_manager_data_cb_all(void* server, const char* data, size_t size);
 
 // called from transporter
-void rcp_server_receive_cb(rcp_server* server, char* data, size_t size, void* client);
+void rcp_server_receive_cb(rcp_server* server, const char* data, size_t size, void* client);
 
 
 // logging

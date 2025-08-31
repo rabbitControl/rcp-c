@@ -31,7 +31,7 @@
 #include "rcp_typedefinition.h"
 #include "rcp_logging.h"
 
-char* rcp_read_i8(char* data, size_t* size, int8_t* target)
+const char* rcp_read_i8(const char* data, size_t* size, int8_t* target)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -43,12 +43,12 @@ char* rcp_read_i8(char* data, size_t* size, int8_t* target)
     return data+1;
 }
 
-char* rcp_read_u8(char* data, size_t* size, uint8_t* target)
+const char* rcp_read_u8(const char* data, size_t* size, uint8_t* target)
 {
     return rcp_read_i8(data, size, (int8_t*)target);
 }
 
-char* rcp_read_i16(char* data, size_t* size, int16_t* target)
+const char* rcp_read_i16(const char* data, size_t* size, int16_t* target)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -62,7 +62,7 @@ char* rcp_read_i16(char* data, size_t* size, int16_t* target)
 
 
 
-char* rcp_read_i32(char* data, size_t* size, int32_t* target)
+const char* rcp_read_i32(const char* data, size_t* size, int32_t* target)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -74,7 +74,7 @@ char* rcp_read_i32(char* data, size_t* size, int32_t* target)
     return data+4;
 }
 
-char* rcp_read_i64(char* data, size_t* size, int64_t* target)
+const char* rcp_read_i64(const char* data, size_t* size, int64_t* target)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -86,7 +86,7 @@ char* rcp_read_i64(char* data, size_t* size, int64_t* target)
     return data+8;
 }
 
-char* rcp_read_f32(char* data, size_t* size, float* target)
+const char* rcp_read_f32(const char* data, size_t* size, float* target)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -115,7 +115,7 @@ char* rcp_read_f32(char* data, size_t* size, float* target)
     return data+4;
 }
 
-char* rcp_read_f64(char* data, size_t* size, double* target)
+const char* rcp_read_f64(const char* data, size_t* size, double* target)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -150,14 +150,14 @@ char* rcp_read_f64(char* data, size_t* size, double* target)
 
 
 
-static rcp_parameter* _create_parameter_from_data(char** data, size_t* size)
+static rcp_parameter* _create_parameter_from_data(const char** data, size_t* size)
 {
     if (data == NULL) return NULL;
     if (*data == NULL) return NULL;
 
     int16_t parameter_id = 0;
     rcp_datatype datatype_id = DATATYPE_INVALID;
-    char* r_data;
+    const char* r_data;
 
     // we need at least 3 bytes
     if (*size >= 3)
@@ -234,7 +234,7 @@ static rcp_parameter* _create_parameter_from_data(char** data, size_t* size)
     return NULL;
 }
 
-rcp_parameter* rcp_parse_parameter(char** data, size_t* size)
+rcp_parameter* rcp_parse_parameter(const char** data, size_t* size)
 {
     // smalles possible parameter = 5 bytes (2byte id, 1byte typeid, term, term)
     if (*size < 5) return NULL;
@@ -244,7 +244,7 @@ rcp_parameter* rcp_parse_parameter(char** data, size_t* size)
     if (parameter)
     {
         // parse type-options
-        char* r_data = rcp_typedefinition_parse_type_options(rcp_parameter_get_typedefinition(parameter), *data, size);
+        const char* r_data = rcp_typedefinition_parse_type_options(rcp_parameter_get_typedefinition(parameter), *data, size);
         if (r_data == NULL)
         {
             rcp_parameter_free(parameter);
@@ -256,7 +256,7 @@ rcp_parameter* rcp_parse_parameter(char** data, size_t* size)
         if (*size > 0)
         {
             // parse parameter options
-            char* r_data = rcp_parameter_parse_options(parameter, *data, size);
+            const char* r_data = rcp_parameter_parse_options(parameter, *data, size);
             if (r_data == NULL)
             {
                 rcp_parameter_free(parameter);
@@ -271,7 +271,7 @@ rcp_parameter* rcp_parse_parameter(char** data, size_t* size)
 }
 
 
-rcp_parameter* rcp_parse_value_update(char** data, size_t* size)
+rcp_parameter* rcp_parse_value_update(const char** data, size_t* size)
 {
     if (data == NULL) return NULL;
     if (*data == NULL) return NULL;
@@ -294,7 +294,7 @@ rcp_parameter* rcp_parse_value_update(char** data, size_t* size)
             !rcp_parameter_is_type(parameter, DATATYPE_BANG))
     {
         // parse value
-        char* r_data = rcp_parameter_parse_value(parameter, *data, size);
+        const char* r_data = rcp_parameter_parse_value(parameter, *data, size);
         if (r_data == NULL)
         {
             rcp_parameter_free(parameter);

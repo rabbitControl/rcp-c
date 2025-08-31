@@ -63,7 +63,7 @@ void rcp_client_log_transporter_free(rcp_client_log_transporter* transporter)
     }
 }
 
-void rcp_client_log_transporter_send(rcp_client_transporter* transporter, char* data, size_t size)
+void rcp_client_log_transporter_send(rcp_client_transporter* transporter, const char* data, size_t size)
 {
     RCP_INFO("CLIENT LOG TRANSPORTER - send data:\n");
 

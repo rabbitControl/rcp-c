@@ -58,7 +58,7 @@ void rcp_slip_append(rcp_slip* s, unsigned char c);
 void rcp_slip_append_data(rcp_slip* s, char* data, size_t size);
 
 // encode data to slip
-void rcp_slip_encode(char* data, size_t size, void (*dataCb)(char, void*), void* user);
+void rcp_slip_encode(const char* data, size_t size, void (*dataCb)(char, void*), void* user);
 
 #ifdef __cplusplus
 }

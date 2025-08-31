@@ -185,7 +185,7 @@ const char* rcp_infodata_get_application_id(rcp_infodata* data)
 }
 
 
-rcp_infodata* rcp_infodata_parse(char** data, size_t* size)
+rcp_infodata* rcp_infodata_parse(const char** data, size_t* size)
 {
     // get tinystring<
     char *version = NULL;
@@ -193,7 +193,7 @@ rcp_infodata* rcp_infodata_parse(char** data, size_t* size)
     uint8_t version_len = 0;
     uint8_t appid_len = 0;
 
-    char* r_data = rcp_read_tiny_string(*data, size, &version, &version_len);
+    const char* r_data = rcp_read_tiny_string(*data, size, &version, &version_len);
     if (r_data == NULL) return NULL;
 
     // return data ok

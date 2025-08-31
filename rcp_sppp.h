@@ -43,18 +43,18 @@ extern "C" {
 typedef struct rcp_sppp rcp_sppp;
 
 // create / free
-rcp_sppp* rcp_sppp_create(size_t max_size, void (*packet_cb)(char*, size_t, void*), void* user);
+rcp_sppp* rcp_sppp_create(size_t max_size, void (*packet_cb)(const char*, size_t, void*), void* user);
 void rcp_sppp_free(rcp_sppp* pp);
 
 // reset sppp
 void rcp_sppp_reset(rcp_sppp* pp);
 
 // callbacks
-void rcp_sppp_set_packet_cb(rcp_sppp* pp, void (*packet_cb)(char*, size_t, void*), void* user);
-void rcp_sppp_set_bypass_cb(rcp_sppp* pp, void (*data_cb)(char*, size_t, void*), void (*done_cb)(void*));
+void rcp_sppp_set_packet_cb(rcp_sppp* pp, void (*packet_cb)(const char*, size_t, void*), void* user);
+void rcp_sppp_set_bypass_cb(rcp_sppp* pp, void (*data_cb)(const char*, size_t, void*), void (*done_cb)(void*));
 
 // new data in
-void rcp_sppp_data(rcp_sppp* pp, char* data, size_t size);
+void rcp_sppp_data(rcp_sppp* pp, const char* data, size_t size);
 
 // control data bypass
 void rcp_sppp_set_bypass(rcp_sppp* pp, unsigned char bypass);

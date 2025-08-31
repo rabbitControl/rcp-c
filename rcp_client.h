@@ -56,10 +56,10 @@ void rcp_client_log(rcp_client* client);
 
 
 // called from manager on parameter update
-void rcp_client_manager_data_cb_all(void* clnt, char* data, size_t size);
+void rcp_client_manager_data_cb_all(void* client, const char* data, size_t size);
 
 // called from transporter
-void rcp_client_receive_cb(rcp_client* client, char* data, size_t size);
+void rcp_client_receive_cb(rcp_client* client, const char* data, size_t size);
 void rcp_client_connected_cb(rcp_client* client);
 void rcp_client_disconnected_cb(rcp_client* client);
 

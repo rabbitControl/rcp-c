@@ -52,9 +52,9 @@ void rcp_typedefinition_free(rcp_typedefinition* typedefinition);
 rcp_datatype rcp_typedefinition_get_type_id(rcp_typedefinition* typedefinition);
 
 // parse
-char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_option* opt);
-char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, char* data, size_t* size, rcp_option* opt);
-char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, char* data, size_t* size);
+const char* rcp_typedefinition_parse_number_value(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_option* opt);
+const char* rcp_typedefinition_parse_string_value(rcp_typedefinition* typedefinition, const char* data, size_t* size, rcp_option* opt);
+const char* rcp_typedefinition_parse_type_options(rcp_typedefinition* typedefinition, const char* data, size_t* size);
 
 // size and writing
 size_t rcp_typedefinition_get_size(rcp_typedefinition* typedefinition, bool all);

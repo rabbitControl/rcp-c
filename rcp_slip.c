@@ -199,7 +199,7 @@ void rcp_slip_append_data(rcp_slip* s, char* data, size_t size)
 
 
 // encode data to slip, "send" data to dataCb(char, void*)
-void rcp_slip_encode(char* data, size_t size, void (*dataCb)(char, void*), void* user)
+void rcp_slip_encode(const char* data, size_t size, void (*dataCb)(char, void*), void* user)
 {
   if (data == NULL) return;
   if (dataCb == NULL) return;

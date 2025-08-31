@@ -26,12 +26,10 @@
 
 #include <string.h>
 
-#include "rcp_logging.h"
-
 
 rcp_server_transporter* rcp_server_transporter_setup(rcp_server_transporter* t,
-                                                     void (*sendToOne)(rcp_server_transporter* transporter, char* data, size_t size, void* id),
-                                                     void (*sendTAll)(rcp_server_transporter* transporter, char* data, size_t size, void* excludeId))
+                                                     void (*sendToOne)(rcp_server_transporter* transporter, const char* data, size_t size, void* id),
+                                                     void (*sendTAll)(rcp_server_transporter* transporter, const char* data, size_t size, void* excludeId))
 {
     if (t)
     {
@@ -47,7 +45,7 @@ rcp_server_transporter* rcp_server_transporter_setup(rcp_server_transporter* t,
 
 void rcp_server_transporter_set_recv_cb(rcp_server_transporter* t,
                                         rcp_server* server,
-                                        void (*received)(rcp_server* server, char* data, size_t size, void* user))
+                                        void (*received)(rcp_server* server, const char* data, size_t size, void* user))
 {
     if (t)
     {
@@ -56,7 +54,7 @@ void rcp_server_transporter_set_recv_cb(rcp_server_transporter* t,
     }
 }
 
-void rcp_server_transporter_call_recv_cb(rcp_server_transporter* t, char* data, size_t size, void* client)
+void rcp_server_transporter_call_recv_cb(rcp_server_transporter* t, const char* data, size_t size, void* client)
 {
     if (t && t->received)
     {

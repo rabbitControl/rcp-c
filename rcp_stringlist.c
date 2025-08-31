@@ -128,7 +128,7 @@ void rcp_stringlist_append(rcp_stringlist* list, const char* string)
 }
 
 // full transfer
-void rcp_stringlist_append_put(rcp_stringlist* list, char* string)
+void rcp_stringlist_append_put(rcp_stringlist* list, const char* string)
 {
     if (list == NULL) return;
 
@@ -138,7 +138,7 @@ void rcp_stringlist_append_put(rcp_stringlist* list, char* string)
     {
         RCP_STRINGLIST_DEBUG("*** stringlist strings: %p\n", list->strings);
 
-        list->strings[list->count] = string;
+        list->strings[list->count] = (char*)string;
 
         list->count++;
     }

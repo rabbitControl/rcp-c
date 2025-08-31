@@ -68,7 +68,7 @@ struct transporter_list_item
 
 
 
-static inline void _rcp_server_send_to_one(rcp_server* server, char* data, size_t size, void* client)
+static inline void _rcp_server_send_to_one(rcp_server* server, const char* data, size_t size, void* client)
 {
     transporter_list_item* le = server->transporters;
     while (le)
@@ -82,7 +82,7 @@ static inline void _rcp_server_send_to_one(rcp_server* server, char* data, size_
     }
 }
 
-static inline void _rcp_server_send_to_all(rcp_server* server, char* data, size_t size, void* client)
+static inline void _rcp_server_send_to_all(rcp_server* server, const char* data, size_t size, void* client)
 {
     transporter_list_item* le = server->transporters;
     while (le)
@@ -292,7 +292,7 @@ void rcp_server_log(rcp_server* server)
 
 // called from manager on init, ...
 // we need to send this data
-void rcp_server_manager_data_cb_one(void* srv, char* data, size_t size, void* client)
+void rcp_server_manager_data_cb_one(void* srv, const char* data, size_t size, void* client)
 {
     if (srv == NULL) return;
     if (data == NULL) return;
@@ -304,7 +304,7 @@ void rcp_server_manager_data_cb_one(void* srv, char* data, size_t size, void* cl
 
 // called from manager on parameter update
 // we need to send this data
-void rcp_server_manager_data_cb_all(void* srv, char* data, size_t size)
+void rcp_server_manager_data_cb_all(void* srv, const char* data, size_t size)
 {
     if (srv == NULL) return;
     if (data == NULL) return;
@@ -428,16 +428,16 @@ static void send_initial_parameters(rcp_server* server, void* client)
 }
 
 // receive from transporter
-void rcp_server_receive_cb(rcp_server* server, char* data, size_t size, void* client)
+void rcp_server_receive_cb(rcp_server* server, const char* data, size_t size, void* client)
 {
     if (server == NULL) return;
 
     // parse data
     rcp_packet* packet = NULL;
 
-    // note: don't use data and size directly
+    // NOTE: don't use data and size directly
     // we need it to forward the data in case of COMMAND_UPDATE and COMMAND_UPDATEVALUE
-    char* parse_data = data;
+    const char* parse_data = data;
     size_t parse_data_size = size;
 
     while (parse_data != NULL

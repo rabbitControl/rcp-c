@@ -270,8 +270,8 @@ void rcp_parameter_set_userid(rcp_parameter* parameter, const char* userid);
 const char* rcp_parameter_get_userid(rcp_parameter* parameter);
 
 // parsing
-char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* size);
-char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* size);
+const char* rcp_parameter_parse_value(rcp_parameter* parameter, const char* data, size_t* size);
+const char* rcp_parameter_parse_options(rcp_parameter* parameter, const char* data, size_t* size);
 
 // size and writing
 size_t rcp_parameter_get_size(rcp_parameter* parameter, bool all);

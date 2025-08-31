@@ -52,16 +52,14 @@ struct rcp_manager
 
     uint16_t parameter_count;
 
-    void (*sendDataCbOne)(void* user, char* data, size_t size, void* client);
-    void (*sendDataCbAll)(void* user, char* data, size_t size);
+    void (*sendDataCbOne)(void* user, const char* data, size_t size, void* client);
+    void (*sendDataCbAll)(void* user, const char* data, size_t size);
 
     void (*parameterAddedCb)(rcp_parameter* parameter, void* user);
     void (*parameterRemovedCb)(rcp_parameter* parameter, void* user);
 
     void* user;
 };
-
-
 
 rcp_manager* rcp_manager_create(void* user)
 {
@@ -151,14 +149,14 @@ void rcp_manager_clear(rcp_manager* manager)
     }
 }
 
-void rcp_manager_set_data_cb_one(rcp_manager* manager, void (*cb)(void*, char*, size_t, void*))
+void rcp_manager_set_data_cb_one(rcp_manager* manager, void (*cb)(void*, const char*, size_t, void*))
 {
     if (manager == NULL) return;
 
     manager->sendDataCbOne = cb;
 }
 
-void rcp_manager_set_data_cb_all(rcp_manager* manager, void (*cb)(void*, char*, size_t))
+void rcp_manager_set_data_cb_all(rcp_manager* manager, void (*cb)(void*, const char*, size_t))
 {
     if (manager == NULL) return;
 

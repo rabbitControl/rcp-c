@@ -27,10 +27,9 @@
 #include <string.h>
 
 #include "rcp_logging.h"
-#include "rcp_client.h"
 
 rcp_client_transporter* rcp_client_transporter_setup(rcp_client_transporter* t,
-                                                     void (*send)(rcp_client_transporter* transporter, char* data, size_t size))
+                                                     void (*send)(rcp_client_transporter* transporter, const char* data, size_t size))
 {
     if (t)
     {
@@ -45,7 +44,7 @@ rcp_client_transporter* rcp_client_transporter_setup(rcp_client_transporter* t,
 
 void rcp_client_transporter_set_recv_cb(rcp_client_transporter* t,
                                         rcp_client* client,
-                                        void (*received)(rcp_client* client, char* data, size_t size))
+                                        void (*received)(rcp_client* client, const char* data, size_t size))
 {
     if (t)
     {
@@ -101,7 +100,7 @@ void rcp_client_transporter_set_disconnected_cb(rcp_client_transporter* t,
 }
 
 // call callbacks
-void rcp_client_transporter_call_recv_cb(rcp_client_transporter* t, char* data, size_t size)
+void rcp_client_transporter_call_recv_cb(rcp_client_transporter* t, const char* data, size_t size)
 {
     if (t && t->received)
     {

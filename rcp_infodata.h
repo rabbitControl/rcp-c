@@ -41,7 +41,7 @@ rcp_infodata* rcp_infodata_create(const char* version, const char* applicationId
 void rcp_infodata_free(rcp_infodata* data);
 
 // parse
-rcp_infodata* rcp_infodata_parse(char** data, size_t* size);
+rcp_infodata* rcp_infodata_parse(const char** data, size_t* size);
 
 // size and writing
 size_t rcp_infodata_get_size(rcp_infodata* data);

@@ -29,7 +29,6 @@
 #include "rcp_memory.h"
 #include "rcp_logging.h"
 #include "rcp_parser.h"
-#include "rcp_endian.h"
 #include "rcp_option.h"
 #include "rcp_parameter.h"
 #include "rcp_typedefinition.h"
@@ -296,7 +295,7 @@ void rcp_packet_log(rcp_packet* packet)
 * return
 *   a pointer to the data after this packet or NULL on error
 */
-char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t* out_size)
+const char* rcp_packet_parse(const char* data, size_t size, rcp_packet** out_packet, size_t* out_size)
 {
     if (data == NULL) return NULL;
 

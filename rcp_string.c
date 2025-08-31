@@ -45,7 +45,7 @@
 #endif
 
 // read tiny string from data and store it into option
-char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size, char option_prefix)
+const char* rcp_read_tiny_string_option(rcp_option** options, const char* data, size_t* size, char option_prefix)
 {
     if (options == NULL) return NULL;
 
@@ -76,7 +76,7 @@ char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size
 }
 
 // read short string from data and store it into option
-char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* size, char option_prefix)
+const char* rcp_read_short_string_option(rcp_option** options, const char* data, size_t* size, char option_prefix)
 {
     if (options == NULL) return NULL;
 
@@ -106,7 +106,7 @@ char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* siz
 }
 
 // copy tiny-string from data into target
-char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str_length)
+const char* rcp_read_tiny_string(const char* data, size_t* size, char** target, uint8_t* str_length)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -148,7 +148,7 @@ char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str
     return data;
 }
 
-char* rcp_read_short_string(char* data, size_t* size, char** target, uint16_t* str_length)
+const char* rcp_read_short_string(const char* data, size_t* size, char** target, uint16_t* str_length)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;
@@ -190,7 +190,7 @@ char* rcp_read_short_string(char* data, size_t* size, char** target, uint16_t* s
     return data;
 }
 
-char* rcp_read_long_string(char* data, size_t* size, char** target, uint32_t* str_length)
+const char* rcp_read_long_string(const char* data, size_t* size, char** target, uint32_t* str_length)
 {
     if (data == NULL) return NULL;
     if (target == NULL) return NULL;

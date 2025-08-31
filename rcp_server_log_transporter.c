@@ -65,7 +65,7 @@ void rcp_server_log_transporter_free(rcp_server_log_transporter* transporter)
 }
 
 
-void rcp_server_log_transporter_push_data(rcp_server_log_transporter* transporter, char* data, size_t size)
+void rcp_server_log_transporter_push_data(rcp_server_log_transporter* transporter, const char* data, size_t size)
 {
     if (transporter &&
             data  &&
@@ -93,7 +93,7 @@ void rcp_server_log_transporter_unbind(rcp_server_transporter* transporter)
     RCP_INFO("close some connection!");
 }
 
-void rcp_server_log_transporter_send_to_one(rcp_server_transporter* transporter, char* data, size_t size, void* id)
+void rcp_server_log_transporter_send_to_one(rcp_server_transporter* transporter, const char* data, size_t size, void* id)
 {
 //    server_log_transporter* t = (server_log_transporter*)transporter;
     RCP_INFO("LOG TRANSPORTER - send data to one: %p\n", id);
@@ -106,7 +106,7 @@ void rcp_server_log_transporter_send_to_one(rcp_server_transporter* transporter,
     RCP_INFO_ONLY("\n");
 }
 
-void rcp_server_log_transporter_send_to_all(rcp_server_transporter* transporter, char* data, size_t size, void* excludeId)
+void rcp_server_log_transporter_send_to_all(rcp_server_transporter* transporter, const char* data, size_t size, void* excludeId)
 {
     rcp_server_log_transporter* t = (rcp_server_log_transporter*)transporter;
     RCP_INFO("LOG TRANSPORTER - send data to all, except: %p\n", excludeId);

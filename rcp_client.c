@@ -228,7 +228,7 @@ void rcp_client_log(rcp_client* client)
 
 
 // called from manager on parameter update
-void rcp_client_manager_data_cb_all(void* c, char* data, size_t size)
+void rcp_client_manager_data_cb_all(void* c, const char* data, size_t size)
 {
     if (c == NULL) return;
     if (data == NULL) return;
@@ -344,7 +344,7 @@ static inline void _do_command_info(rcp_client* client, rcp_packet* packet)
 
 
 // called from transporter
-void rcp_client_receive_cb(rcp_client* client, char* data, size_t size)
+void rcp_client_receive_cb(rcp_client* client, const char* data, size_t size)
 {
     if (client == NULL) return;    
 
@@ -354,7 +354,7 @@ void rcp_client_receive_cb(rcp_client* client, char* data, size_t size)
     while (data != NULL
            && size > 0)
     {
-        data = rcp_packet_parse(data, size, &packet, &size);
+        data = rcp_packet_parse((char*)data, size, &packet, &size);
 
         if (data && packet)
         {

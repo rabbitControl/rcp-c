@@ -803,7 +803,7 @@ bool rcp_option_set_data(rcp_option* opt, void* data, size_t size, bool sizepref
     return true;
 }
 
-bool rcp_option_copy_data(rcp_option* opt, void* data, size_t size, bool sizeprefixed)
+bool rcp_option_copy_data(rcp_option* opt, const void* data, size_t size, bool sizeprefixed)
 {
     if (opt == NULL) return false;
     if (data == NULL) return false;
@@ -876,7 +876,7 @@ static void _set_string_type(rcp_option* opt, rcp_string_types type)
  *  move str into option:
  *  the option "owns" the data and attempts to free it on rcp_option_free()
  */
-bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
+bool rcp_option_move_string(rcp_option* opt, const char* str, rcp_string_types type)
 {
     if (opt == NULL) return false;
     if (str == NULL) return false;
@@ -905,7 +905,7 @@ bool rcp_option_move_string(rcp_option* opt, char* str, rcp_string_types type)
     // free data
     rcp_option_free_data(opt);
 
-    opt->data.str = str;
+    opt->data.str = (char*)str;
 
     _set_string_type(opt, type);
     opt->data_size = type + strlen(str);

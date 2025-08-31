@@ -67,7 +67,7 @@ void rcp_packet_put_parameter(rcp_packet* packet, rcp_parameter* parameter); // 
 rcp_parameter* rcp_packet_take_parameter(rcp_packet* packet); // full transfer
 
 // parse and write
-char* rcp_packet_parse(char* data, size_t size, rcp_packet** out_packet, size_t* out_size);
+const char* rcp_packet_parse(const char* data, size_t size, rcp_packet** out_packet, size_t* out_size);
 size_t rcp_packet_write(rcp_packet* packet, char** dst, bool all);
 size_t rcp_packet_write_buf(rcp_packet* packet, char* data, size_t size, bool all);
 

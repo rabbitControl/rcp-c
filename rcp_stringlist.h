@@ -44,7 +44,7 @@ rcp_stringlist* rcp_stringlist_create_args(int count, va_list args);
 void rcp_stringlist_free(rcp_stringlist* list);
 
 void rcp_stringlist_append(rcp_stringlist* list, const char* string); // copy
-void rcp_stringlist_append_put(rcp_stringlist* list, char* string); // full transfer
+void rcp_stringlist_append_put(rcp_stringlist* list, const char* string); // full transfer
 
 size_t rcp_stringlist_get_size(rcp_stringlist* list);
 size_t rcp_stringlist_write(rcp_stringlist* list, char* dst, size_t size);

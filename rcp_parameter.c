@@ -395,8 +395,6 @@ void rcp_parameter_copy_from(rcp_parameter* dst, rcp_parameter* src)
 
     if (value_parameter)
     {
-        RCP_PARAMETER_DEBUG("call value udpated cb\n");
-
         if (value_parameter->valueUpdatedCb != NULL)
         {
             value_parameter->valueUpdatedCb(value_parameter, RCP_PARAMETER(value_parameter)->user);
@@ -407,8 +405,6 @@ void rcp_parameter_copy_from(rcp_parameter* dst, rcp_parameter* src)
 
     if (call_update_cb)
     {
-        RCP_PARAMETER_DEBUG("call udpated cb\n");
-
         if (dst->optionUpdatedCb != NULL)
         {
             dst->optionUpdatedCb(dst, dst->user);
@@ -1807,7 +1803,7 @@ void rcp_parameter_set_external_value_cb(rcp_value_parameter* parameter, void (*
  *
  *
  */
-char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* size)
+const char* rcp_parameter_parse_value(rcp_parameter* parameter, const char* data, size_t* size)
 {
     if (parameter == NULL) return NULL;
 
@@ -1904,7 +1900,7 @@ char* rcp_parameter_parse_value(rcp_parameter* parameter, char* data, size_t* si
  *
  *
  */
-char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* size)
+const char* rcp_parameter_parse_options(rcp_parameter* parameter, const char* data, size_t* size)
 {
     if (parameter == NULL) return NULL;
     if (data == NULL || *size == 0) return data;
@@ -1953,7 +1949,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
         {
         case PARAMETER_OPTIONS_VALUE:
         {
-            char* r_data = rcp_parameter_parse_value(parameter, data, size);
+            const char* r_data = rcp_parameter_parse_value(parameter, data, size);
             if (r_data == NULL)
             {
                 return NULL;
@@ -1998,7 +1994,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
                 uint8_t str_len = 0;
                 char* str = NULL;
 
-                char* r_data = rcp_read_tiny_string(data, size, &str, &str_len);
+                const char* r_data = rcp_read_tiny_string(data, size, &str, &str_len);
                 if (r_data == NULL)
                 {
                     rcp_langstr_free_chain(lng_strs);
@@ -2064,7 +2060,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
                 // short string
                 uint16_t str_len;
                 char* str;
-                char* r_data = rcp_read_short_string(data, size, &str, &str_len);
+                const char* r_data = rcp_read_short_string(data, size, &str, &str_len);
                 if (r_data == NULL)
                 {
                     rcp_langstr_free_chain(lng_strs);
@@ -2098,7 +2094,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
 
         case PARAMETER_OPTIONS_TAGS:
         {
-            char* r_data = rcp_read_tiny_string_option(&parameter->options, data, size, PARAMETER_OPTIONS_TAGS);
+            const char* r_data = rcp_read_tiny_string_option(&parameter->options, data, size, PARAMETER_OPTIONS_TAGS);
             if (r_data == NULL) return NULL;
 
             data = r_data;
@@ -2172,7 +2168,7 @@ char* rcp_parameter_parse_options(rcp_parameter* parameter, char* data, size_t* 
 
         case PARAMETER_OPTIONS_USERID:
         {
-            char* r_data = rcp_read_tiny_string_option(&parameter->options, data, size, PARAMETER_OPTIONS_USERID);
+            const char* r_data = rcp_read_tiny_string_option(&parameter->options, data, size, PARAMETER_OPTIONS_USERID);
             if (r_data == NULL) return NULL;
 
             data = r_data;

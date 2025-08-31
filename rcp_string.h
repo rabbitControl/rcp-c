@@ -39,12 +39,12 @@ extern "C"{
 //#define RCP_STRING_MALLOC_DEBUG_LOG
 
 
-char* rcp_read_tiny_string(char* data, size_t* size, char** target, uint8_t* str_length);
-char* rcp_read_short_string(char* data, size_t* size, char** target, uint16_t* str_length);
-char* rcp_read_long_string(char* data, size_t* size, char** target, uint32_t* str_length);
+const char* rcp_read_tiny_string(const char* data, size_t* size, char** target, uint8_t* str_length);
+const char* rcp_read_short_string(const char* data, size_t* size, char** target, uint16_t* str_length);
+const char* rcp_read_long_string(const char* data, size_t* size, char** target, uint32_t* str_length);
 
-char* rcp_read_tiny_string_option(rcp_option** options, char* data, size_t* size, char option_prefix);
-char* rcp_read_short_string_option(rcp_option** options, char* data, size_t* size, char option_prefix);
+const char* rcp_read_tiny_string_option(rcp_option** options, const char* data, size_t* size, char option_prefix);
+const char* rcp_read_short_string_option(rcp_option** options, const char* data, size_t* size, char option_prefix);
 
 
 size_t rcp_write_tiny_string(char* dst, size_t size, const char* str);

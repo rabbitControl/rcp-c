@@ -64,12 +64,11 @@ void rcp_manager_set_parameter_added_cb(rcp_manager* manager, void (*cb)(rcp_par
 void rcp_manager_set_parameter_removed_cb(rcp_manager* manager, void (*cb)(rcp_parameter* parameter, void* user));
 
 // set data callbacks
-void rcp_manager_set_data_cb_one(rcp_manager* manager, void (*cb)(void*, char*, size_t, void*));
-void rcp_manager_set_data_cb_all(rcp_manager* manager, void (*cb)(void*, char*, size_t));
+void rcp_manager_set_data_cb_one(rcp_manager* manager, void (*cb)(void*, const char*, size_t, void*));
+void rcp_manager_set_data_cb_all(rcp_manager* manager, void (*cb)(void*, const char*, size_t));
 
 // update
 void rcp_manager_update(rcp_manager* manager);
-
 
 // logging
 void rcp_manager_log(rcp_manager* manager);

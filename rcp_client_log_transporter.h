@@ -44,10 +44,10 @@ rcp_client_log_transporter* rcp_client_log_transporter_create();
 void rcp_client_log_transporter_free(rcp_client_log_transporter* transporter);
 
 // push data in
-void rcp_client_log_transporter_push_data(rcp_client_log_transporter* transporter, char* data, size_t size);
+void rcp_client_log_transporter_push_data(rcp_client_log_transporter* transporter, const char* data, size_t size);
 
 // rcp_client_transporter interface
-void rcp_client_log_transporter_send(rcp_client_transporter* transporter, char* data, size_t size);
+void rcp_client_log_transporter_send(rcp_client_transporter* transporter, const char* data, size_t size);
 
 
 #ifdef __cplusplus

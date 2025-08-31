@@ -27,8 +27,8 @@
 #include <stdio.h>
 
 #include "rcp_memory.h"
-#include "rcp_logging.h"
 #include "rcp_endian.h"
+#include "rcp_logging.h"
 
 #if defined(RCP_VECTOR_DEBUG_LOG) || defined(RCP_ALL_DEBUG)
 #define RCP_VECTOR_DEBUG(...) RCP_DEBUG(__VA_ARGS__)

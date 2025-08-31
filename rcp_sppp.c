@@ -25,7 +25,6 @@
 #include "rcp_sppp.h"
 
 #include <string.h>
-#include <stdint.h>
 
 #include "rcp.h"
 #include "rcp_memory.h"
@@ -64,10 +63,10 @@ struct rcp_sppp
     size_t packet_size;                             // next packet size
     unsigned char flags;                            // flags
     //
-    void (*packet_cb)(char*, size_t, void*);        // packet callback
+    void (*packet_cb)(const char*, size_t, void*);        // packet callback
     void* user;                                     // user field
     //
-    void (*bypass_data_cb)(char*, size_t, void*);   // callback for bypass bytes
+    void (*bypass_data_cb)(const char*, size_t, void*);   // callback for bypass bytes
     void (*bypass_done_cb)(void*);                  // callback triggers if: bypass > 0 and packet_size == 0
 };
 
@@ -129,7 +128,7 @@ static void minimize_buffer(rcp_sppp* pp)
 }
 
 
-static char memcpy_data_to_buffer(rcp_sppp* pp, void* data, size_t size)
+static char memcpy_data_to_buffer(rcp_sppp* pp, const void* data, size_t size)
 {
     if (pp == NULL || data == NULL || size == 0) return 0;
 
@@ -161,7 +160,7 @@ static char memcpy_data_to_buffer(rcp_sppp* pp, void* data, size_t size)
 }
 
 
-rcp_sppp* rcp_sppp_create(size_t max_buffer_size, void (*packet_cb)(char*, size_t, void*), void* user)
+rcp_sppp* rcp_sppp_create(size_t max_buffer_size, void (*packet_cb)(const char*, size_t, void*), void* user)
 {
     rcp_sppp* pp = RCP_CALLOC(1, sizeof(rcp_sppp));
 
@@ -208,7 +207,7 @@ void rcp_sppp_reset(rcp_sppp* pp)
     }
 }
 
-void rcp_sppp_set_packet_cb(rcp_sppp* pp, void (*packet_cb)(char*, size_t, void*), void* user)
+void rcp_sppp_set_packet_cb(rcp_sppp* pp, void (*packet_cb)(const char*, size_t, void*), void* user)
 {
     if (pp == NULL) return;
 
@@ -216,7 +215,7 @@ void rcp_sppp_set_packet_cb(rcp_sppp* pp, void (*packet_cb)(char*, size_t, void*
     pp->user = user;
 }
 
-void rcp_sppp_set_bypass_cb(rcp_sppp* pp, void (*data_cb)(char*, size_t, void*), void (*done_cb)(void*))
+void rcp_sppp_set_bypass_cb(rcp_sppp* pp, void (*data_cb)(const char*, size_t, void*), void (*done_cb)(void*))
 {
     if (pp == NULL) return;
 
@@ -224,7 +223,7 @@ void rcp_sppp_set_bypass_cb(rcp_sppp* pp, void (*data_cb)(char*, size_t, void*),
     pp->bypass_done_cb = done_cb;
 }
 
-void rcp_sppp_data(rcp_sppp* pp, char* data, size_t size)
+void rcp_sppp_data(rcp_sppp* pp, const char* data, size_t size)
 {
     if (pp == NULL || data == NULL || size == 0) return;
 
