@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 
-project("rcpc"
-    VERSION 1.1.0
-    LANGUAGES C
-)
+project("rcpc" LANGUAGES C VERSION 1.1.0)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
 file(GLOB SOURCES
@@ -14,5 +13,4 @@ file(GLOB HEADERS
     *.h
 )
 
-# create library
 add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES})
